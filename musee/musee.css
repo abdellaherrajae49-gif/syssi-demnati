@@ -231,8 +231,7 @@ body[data-salle="blanche"] .top__brand img { filter: none; }
 .door__room { position: absolute; inset: 0; z-index: -2; display: flex; align-items: center; justify-content: center; gap: 7%; padding: 20% 9% 34%; }
 .door--noire .door__room { background: radial-gradient(70% 50% at 50% 28%, rgba(255, 226, 170, .2), transparent 70%), #0d0b0a; }
 .door--blanche .door__room { background: radial-gradient(70% 50% at 50% 28%, #fff, transparent 70%), #efe9df; }
-.door__room img { width: 26%; height: auto; box-shadow: 0 12px 18px -10px rgba(0, 0, 0, .7); }
-.door__room img:nth-child(2) { width: 34%; transform: translateY(-6%); }
+.door__room img { width: auto; max-width: 62%; max-height: 100%; height: auto; object-fit: contain; box-shadow: 0 16px 24px -12px rgba(0, 0, 0, .75); }
 .door__glow { position: absolute; inset: 0; z-index: -1; opacity: 0; transition: opacity .6s ease; }
 .door--noire .door__glow { background: radial-gradient(60% 50% at 50% 40%, rgba(255, 210, 140, .35), transparent 70%); }
 .door--blanche .door__glow { background: radial-gradient(60% 50% at 50% 40%, #fff, transparent 70%); }

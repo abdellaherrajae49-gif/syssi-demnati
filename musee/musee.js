@@ -28,7 +28,7 @@ let state = { salle: "hall", likes: {}, mine: new Set(), stats: {} };
 ["noire", "blanche"].forEach((s) => {
   const list = WORKS.filter((w) => w.salle === s);
   $(`[data-count="${s}"]`).textContent = `${list.length} œuvres`;
-  $(`[data-preview="${s}"]`).innerHTML = list.slice(0, 3)
+  $(`[data-preview="${s}"]`).innerHTML = list.slice(0, 1)
     .map((w) => `<img src="${img(w, 480)}" alt="" loading="lazy" decoding="async">`).join("");
 });
 
