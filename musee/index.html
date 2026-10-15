@@ -172,16 +172,13 @@
   <section class="expos" id="expositions" hidden aria-labelledby="expo-title">
     <p class="eyebrow">Agenda</p>
     <h2 id="expo-title">Expositions</h2>
-    <div class="expos__grid">
-      <div>
-        <h3>À venir</h3>
-        <ul class="expo-list" id="expo-next"></ul>
-      </div>
-      <div>
-        <h3>Passées</h3>
-        <ul class="expo-list" id="expo-past"></ul>
-      </div>
+    <p class="expos__intro">Les expositions où les toiles de Syssi Demnati ont été accrochées, et les prochaines dates dès qu’elles sont fixées.</p>
+    <div class="expo-next" id="expo-next-wrap">
+      <h3>À venir</h3>
+      <ul class="expo-list" id="expo-next"></ul>
     </div>
+    <h3 class="expos__past">Parcours</h3>
+    <ol class="timeline" id="expo-past"></ol>
     <div class="notify" id="notify">
       <div>
         <h3>Être prévenu(e)</h3>
@@ -192,7 +189,13 @@
   </section>
 
   <footer class="foot">
-    <a href="/">← Instagram, TikTok, Snapchat</a>
+    <img class="foot__sig" src="/assets/signature.png" width="400" height="360" alt="">
+    <nav class="foot__social" aria-label="Réseaux">
+      <a href="https://www.instagram.com/syssidemnati" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.tiktok.com/@syssidemnati" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://snapchat.com/t/BuJIPWbL" target="_blank" rel="noopener">Snapchat</a>
+    </nav>
+    <a class="foot__back" href="/">Tous les liens de l’artiste</a>
     <p>© <span id="year">2026</span> Syssi Demnati · Toutes les œuvres sont des originaux, acrylique sur toile.</p>
   </footer>
 

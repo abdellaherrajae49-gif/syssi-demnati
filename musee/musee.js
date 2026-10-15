@@ -261,8 +261,10 @@ function placeInk(a = $(".top__nav a[aria-current]")) {
 }
 $$(".top__nav a").forEach((a) => a.addEventListener("pointerenter", () => placeInk(a)));
 nav.addEventListener("pointerleave", () => placeInk());
-document.fonts && document.fonts.ready.then(() => placeInk());
-addEventListener("resize", () => placeInk());
+const topHeight = () => document.documentElement.style.setProperty("--top-h", `${topBar.offsetHeight}px`);
+topHeight();
+document.fonts && document.fonts.ready.then(() => { placeInk(); topHeight(); });
+addEventListener("resize", () => { placeInk(); topHeight(); });
 
 const progress = $("#top-progress");
 let lastY = scrollY, topTick = false;
@@ -541,10 +543,20 @@ $$("dialog").forEach((d) => {
 // Agenda
 // ---------------------------------------------------------------
 const expos = window.EXPOSITIONS || [];
-const li = (x) => `<li><span class="expo-list__date">${esc(x.date)}</span><span class="expo-list__place">${esc(x.lieu)}${x.ville ? `, ${esc(x.ville)}` : ""}</span></li>`;
+const place = (x) => `${esc(x.lieu)}${x.ville ? `, ${esc(x.ville)}` : ""}`;
+const li = (x) => `<li><span class="expo-list__date">${esc(x.dates || x.annee)}</span><span class="expo-list__place">${x.titre ? `<em>${esc(x.titre)}</em> · ` : ""}${place(x)}</span></li>`;
 const next = expos.filter((x) => x.quand === "avenir");
-$("#expo-next").innerHTML = next.length ? next.map(li).join("") : `<li class="expo-list__none">Les prochaines dates seront annoncées ici.</li>`;
-$("#expo-past").innerHTML = expos.filter((x) => x.quand !== "avenir").map(li).join("");
+$("#expo-next").innerHTML = next.map(li).join("");
+$("#expo-next-wrap").hidden = !next.length;
+$("#expo-past").innerHTML = expos.filter((x) => x.quand !== "avenir").map((x, i) => `
+  <li class="timeline__item" style="--i:${i}">
+    <span class="timeline__year">${esc(x.annee)}</span>
+    <div class="timeline__body">
+      ${x.titre ? `<h4>${esc(x.titre)}</h4>` : ""}
+      <p class="timeline__place">${place(x)}</p>
+      ${x.dates || x.type ? `<p class="timeline__meta">${[x.dates, x.type].filter(Boolean).map(esc).join(" · ")}</p>` : ""}
+    </div>
+  </li>`).join("");
 
 // ---------------------------------------------------------------
 // Toast
