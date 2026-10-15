@@ -192,7 +192,9 @@ function show(where, push = true, door) {
       hang(salle);
     }
     if (where === "collection") renderCollection();
-    $$(".top__nav a").forEach((a) => a.toggleAttribute("aria-current", a.dataset.go === where));
+    $$(".top__nav a, .menu__item").forEach((a) => a.toggleAttribute("aria-current", a.dataset.go === where));
+    topBar.classList.remove("tucked");
+    placeInk();
     $("meta[name=theme-color]").content = where === "blanche" ? "#f4f0e9" : "#131110";
     scrollTo(0, 0);
     state.salle = where;
@@ -240,9 +242,70 @@ document.addEventListener("click", (e) => {
   const a = e.target.closest("[data-go]");
   if (!a) return;
   e.preventDefault();
+  if (menuOpen()) { toggleMenu(false); setTimeout(() => show(a.dataset.go, true), 380); return; }
   const door = a.dataset.door ? $(`.door--${a.dataset.door}`) : null;
   show(a.dataset.go, true, door);
 });
+// ---------------------------------------------------------------
+// Top bar: a brush swash under the current room, a gold hairline for
+// how far down you are, and a bar that steps aside while you walk.
+// ---------------------------------------------------------------
+const topBar = $("#top");
+const nav = $("#top-nav");
+const ink = $("#top-ink");
+function placeInk(a = $(".top__nav a[aria-current]")) {
+  if (!a || !a.offsetWidth) return ink.classList.remove("on");
+  const pad = 6;
+  ink.style.transform = `translateX(${a.offsetLeft - pad}px) scaleX(${((a.offsetWidth + pad * 2) / 100).toFixed(3)})`;
+  ink.classList.add("on");
+}
+$$(".top__nav a").forEach((a) => a.addEventListener("pointerenter", () => placeInk(a)));
+nav.addEventListener("pointerleave", () => placeInk());
+document.fonts && document.fonts.ready.then(() => placeInk());
+addEventListener("resize", () => placeInk());
+
+const progress = $("#top-progress");
+let lastY = scrollY, topTick = false;
+addEventListener("scroll", () => {
+  if (topTick) return;
+  topTick = true;
+  requestAnimationFrame(() => {
+    topTick = false;
+    const y = scrollY;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? (y / max).toFixed(4) : 0})`;
+    if (!menuOpen() && Math.abs(y - lastY) > 6) {
+      topBar.classList.toggle("tucked", y > lastY && y > 140);
+      lastY = y;
+    }
+  });
+}, { passive: true });
+topBar.addEventListener("focusin", () => topBar.classList.remove("tucked"));
+
+// Full-screen menu on phones
+const burger = $("#burger");
+const menu = $("#menu");
+const menuOpen = () => document.documentElement.classList.contains("menu-open");
+function toggleMenu(open = !menuOpen()) {
+  document.documentElement.classList.toggle("menu-open", open);
+  document.documentElement.classList.toggle("locked", open || $$("dialog").some((d) => d.open));
+  burger.setAttribute("aria-expanded", open);
+  burger.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
+  menu.setAttribute("aria-hidden", !open);
+  if (open) topBar.classList.remove("tucked");
+}
+burger.addEventListener("click", () => toggleMenu());
+addEventListener("keydown", (e) => { if (e.key === "Escape" && menuOpen()) toggleMenu(false); });
+matchMedia("(min-width: 721px)").addEventListener("change", (m) => { if (m.matches && menuOpen()) toggleMenu(false); });
+{
+  const pick = (s, n) => WORKS.filter((w) => !s || w.salle === s)[n];
+  const thumbs = { noire: pick("noire", 0), blanche: pick("blanche", 0), collection: pick("blanche", 3), expositions: pick("noire", 6) };
+  $$("[data-thumb]").forEach((el) => {
+    const w = thumbs[el.dataset.thumb];
+    if (w) el.innerHTML = `<img src="${img(w, 480)}" alt="" loading="lazy" decoding="async">`;
+  });
+}
+
 const VIEWS = ["noire", "blanche", "collection", "expositions"];
 const fromHash = () => {
   const h = location.hash.slice(1);

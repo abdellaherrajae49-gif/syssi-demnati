@@ -31,21 +31,57 @@
     <div class="atelier__grain"></div>
   </div>
 
-  <header class="top">
+  <header class="top" id="top">
     <a class="top__brand" href="/musee" data-go="hall" aria-label="Accueil du musée">
       <img src="/assets/signature.png" width="400" height="360" alt="">
-      <span>Musée Syssi Demnati</span>
+      <span>Musée <em>Syssi Demnati</em></span>
     </a>
-    <nav class="top__nav" aria-label="Salles">
-      <a href="#noire" data-go="noire">Salle Noire</a>
-      <a href="#blanche" data-go="blanche">Salle Blanche</a>
-      <a href="#collection" data-go="collection">Collection</a>
-      <a href="#expositions" data-go="expositions">Expositions</a>
+    <nav class="top__nav" id="top-nav" aria-label="Salles">
+      <span class="top__ink" id="top-ink" aria-hidden="true"></span>
+      <a href="#noire" data-go="noire"><span class="top__num">01</span>Salle Noire<i class="top__dot top__dot--noire" aria-hidden="true"></i></a>
+      <a href="#blanche" data-go="blanche"><span class="top__num">02</span>Salle Blanche<i class="top__dot top__dot--blanche" aria-hidden="true"></i></a>
+      <a href="#collection" data-go="collection"><span class="top__num">03</span>Collection</a>
+      <a href="#expositions" data-go="expositions"><span class="top__num">04</span>Expositions</a>
     </nav>
     <button class="top__account" type="button" id="account-btn" aria-haspopup="dialog">
       <span class="top__avatar" aria-hidden="true">✉</span><span class="top__account-label">Être prévenu(e)</span>
     </button>
+    <button class="top__burger" type="button" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu">
+      <span></span><span></span>
+    </button>
+    <span class="top__progress" aria-hidden="true"><span id="top-progress"></span></span>
   </header>
+
+  <!-- Le menu plein écran (téléphones) -->
+  <div class="menu" id="menu" aria-hidden="true">
+    <nav class="menu__list" aria-label="Menu">
+      <a class="menu__item" href="#noire" data-go="noire" style="--i:0">
+        <span class="menu__num">01</span>
+        <span class="menu__text"><span class="menu__title">Salle Noire</span><span class="menu__sub">Toiles sombres</span></span>
+        <span class="menu__thumb" data-thumb="noire" aria-hidden="true"></span>
+      </a>
+      <a class="menu__item" href="#blanche" data-go="blanche" style="--i:1">
+        <span class="menu__num">02</span>
+        <span class="menu__text"><span class="menu__title">Salle Blanche</span><span class="menu__sub">Toiles claires</span></span>
+        <span class="menu__thumb" data-thumb="blanche" aria-hidden="true"></span>
+      </a>
+      <a class="menu__item" href="#collection" data-go="collection" style="--i:2">
+        <span class="menu__num">03</span>
+        <span class="menu__text"><span class="menu__title">Collection</span><span class="menu__sub">Toutes les œuvres</span></span>
+        <span class="menu__thumb" data-thumb="collection" aria-hidden="true"></span>
+      </a>
+      <a class="menu__item" href="#expositions" data-go="expositions" style="--i:3">
+        <span class="menu__num">04</span>
+        <span class="menu__text"><span class="menu__title">Expositions</span><span class="menu__sub">Agenda et actualités</span></span>
+        <span class="menu__thumb" data-thumb="expositions" aria-hidden="true"></span>
+      </a>
+    </nav>
+    <div class="menu__foot" style="--i:4">
+      <a class="menu__hall" href="/musee" data-go="hall">← Retour au hall</a>
+      <a href="https://instagram.com/syssidemnati" target="_blank" rel="noopener">Instagram</a>
+      <a href="/">Liens</a>
+    </div>
+  </div>
 
   <!-- Le hall : le visiteur choisit sa salle -->
   <!-- Le hall : un seul grand mur, deux portes, chacune éclairée par son projecteur -->
