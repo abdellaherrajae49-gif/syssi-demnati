@@ -19,7 +19,7 @@ Option A (GitHub): push this folder to a new repo, then on vercel.com choose **A
 
 Option B (CLI, no GitHub): from this folder run `npx vercel` and accept the defaults, then `npx vercel --prod`.
 
-After the first deploy, set `og:image` in `index.html` to the full URL (e.g. `https://your-domain.vercel.app/assets/og.jpg`) so link previews show the image everywhere.
+Live at https://syssi-demnati.vercel.app/ — every push to `main` redeploys. If the domain changes, update the `og:image`, `og:url` and canonical URLs in `index.html`.
 
 ## Adding a painting
 
