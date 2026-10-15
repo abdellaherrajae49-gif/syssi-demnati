@@ -538,19 +538,43 @@ svg .fill { fill: currentColor; stroke: none; }
   .stage__collage, .stage__text { grid-area: 1 / 1; }
   .stage__text {
     position: relative; z-index: 4;
-    width: min(440px, 46%);
+    width: clamp(310px, 36%, 400px);
     display: flex; flex-direction: column; align-items: flex-start; gap: 26px;
     animation: rise-in 1s var(--ease) .3s both;
   }
   .stage__text .eyebrow { margin: 0; }
-  .stage__quote { margin: 52px 0 0; filter: drop-shadow(0 24px 40px rgba(0,0,0,.5)); animation: drift 7s ease-in-out 1.5s infinite; }
-  .cloud--big { padding: 34px 40px 30px; border-radius: 70px; }
-  .cloud--big .puff { scale: 1.3; }
-  .cloud--big .p2 { top: -40px; }
-  .cloud--big blockquote { font-size: clamp(24px, 2vw, 32px); line-height: 1.25; }
-  .cloud--big blockquote::before { font-size: 64px; height: 30px; }
+  .stage__quote {
+    position: relative; isolation: isolate; margin: 30px 0 0; width: min(380px, 100%);
+    animation: drift 7s ease-in-out 1.5s infinite;
+  }
+  /* a soft shadow painted as a gradient, not a filter, so no box shows around the cloud */
+  .stage__quote .cloud--big::after { content: none; }
+  .stage__quote > .cloud--big { box-shadow: none; }
+  .stage__quote figcaption { position: relative; }
+  .stage__shadow {
+    position: absolute; left: 6%; right: 6%; top: 30%; height: 70%; z-index: -1;
+    background: radial-gradient(closest-side, rgba(0,0,0,.55), transparent);
+  }
+  /* one seamless cloud shape (a mask), so no seams or edges show between the puffs */
+  .cloud--big {
+    padding: 58px 56px 56px; border-radius: 0;
+    background: radial-gradient(120% 90% at 30% 20%, #fbf6ec, #efe4d0 60%, #e4d5bb);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 260'%3E%3Cg fill='white'%3E%3Crect x='40' y='62' width='320' height='146' rx='70'/%3E%3Ccircle cx='92' cy='98' r='54'/%3E%3Ccircle cx='168' cy='72' r='62'/%3E%3Ccircle cx='252' cy='74' r='58'/%3E%3Ccircle cx='322' cy='108' r='50'/%3E%3Ccircle cx='348' cy='164' r='44'/%3E%3Ccircle cx='292' cy='204' r='48'/%3E%3Ccircle cx='200' cy='212' r='50'/%3E%3Ccircle cx='114' cy='204' r='48'/%3E%3Ccircle cx='54' cy='158' r='44'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 260'%3E%3Cg fill='white'%3E%3Crect x='40' y='62' width='320' height='146' rx='70'/%3E%3Ccircle cx='92' cy='98' r='54'/%3E%3Ccircle cx='168' cy='72' r='62'/%3E%3Ccircle cx='252' cy='74' r='58'/%3E%3Ccircle cx='322' cy='108' r='50'/%3E%3Ccircle cx='348' cy='164' r='44'/%3E%3Ccircle cx='292' cy='204' r='48'/%3E%3Ccircle cx='200' cy='212' r='50'/%3E%3Ccircle cx='114' cy='204' r='48'/%3E%3Ccircle cx='54' cy='158' r='44'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  }
+  .cloud--big .puff { display: none; }
+  .cloud--big blockquote { font-size: clamp(19px, 1.45vw, 23px); line-height: 1.32; text-wrap: balance; }
+  .cloud--big blockquote::before { font-size: 46px; height: 22px; margin-top: -4px; }
+  /* the thought trail: two small bubbles drifting towards the paintings */
+  .stage__quote::before, .stage__quote::after {
+    content: ""; position: absolute; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fbf6ec, #e4d5bb);
+    animation: blink 3s ease-in-out infinite;
+  }
+  .stage__quote::before { width: 22px; height: 22px; right: 8px; bottom: 26px; }
+  .stage__quote::after { width: 12px; height: 12px; right: -14px; bottom: 6px; animation-delay: .4s; }
   .stage__quote figcaption {
-    margin: 34px 0 0 24px;
+    margin: 16px 0 0 34px;
     font: 700 11.5px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase;
     color: var(--saffron);
   }
@@ -567,7 +591,8 @@ svg .fill { fill: currentColor; stroke: none; }
   .stage__arrow { display: inline-block; animation: nudge 1.8s ease-in-out infinite; }
   @keyframes nudge { 50% { transform: translateY(5px); } }
 
-  .stage__collage { position: relative; height: min(84vh, 880px); margin-left: 30%; }
+  .stage__collage { position: relative; height: min(84vh, 880px); margin-left: max(37%, 330px); }
+  .stage__text .eyebrow { white-space: nowrap; font-size: 10.5px; }
   .frame {
     position: absolute; padding: 0; border: 0; cursor: zoom-in;
     border-radius: 14px; overflow: hidden; background: #000;
