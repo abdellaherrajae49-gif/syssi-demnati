@@ -26,10 +26,19 @@ const tiles = WORKS.map((w, i) => {
 let cols = [];
 let colCount = 0;
 const COL_SPEED = [0.06, -0.05, 0.1, -0.03];
+let shownKey = "";
+// Works already on show elsewhere on the page (the "Dernière œuvre" card, the desktop
+// collage) are left out of the gallery, so each painting appears only once.
+const shownElsewhere = () => [...document.querySelectorAll("[data-open]")]
+  .filter((el) => !grid.contains(el) && el.offsetParent !== null && !el.closest("dialog"))
+  .map((el) => Number(el.dataset.open));
 function layout() {
   const n = window.innerWidth >= 1700 ? 4 : window.innerWidth >= 760 ? 3 : 2;
-  if (n === colCount) return;
+  const skip = new Set(shownElsewhere());
+  const key = [...skip].sort().join(",");
+  if (n === colCount && key === shownKey) return;
   colCount = n;
+  shownKey = key;
   grid.innerHTML = "";
   cols = Array.from({ length: n }, () => {
     const c = document.createElement("div");
@@ -40,6 +49,7 @@ function layout() {
   // masonry: each work goes to the column that is currently shortest
   const heights = new Array(n).fill(0);
   tiles.forEach((t, i) => {
+    if (skip.has(i)) return;
     const k = heights.indexOf(Math.min(...heights));
     cols[k].appendChild(t);
     heights[k] += WORKS[i].h / WORKS[i].w + 0.06;

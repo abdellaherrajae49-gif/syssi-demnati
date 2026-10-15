@@ -23,6 +23,13 @@
 </head>
 <body data-salle="hall">
   <div class="lights" aria-hidden="true"></div>
+  <!-- Fond vivant : la lumière du plafond, le reflet du sol et des coups de pinceau qui se peignent -->
+  <div class="atelier" aria-hidden="true">
+    <div class="atelier__spots"><span></span><span></span><span></span></div>
+    <div class="atelier__paint" id="paint"></div>
+    <div class="atelier__floor"></div>
+    <div class="atelier__grain"></div>
+  </div>
 
   <header class="top">
     <a class="top__brand" href="/musee" data-go="hall" aria-label="Accueil du musée">
@@ -42,7 +49,7 @@
   <!-- Le hall : le visiteur choisit sa salle -->
   <section class="hall" id="hall" aria-labelledby="hall-title">
     <p class="eyebrow">Musée en ligne</p>
-    <h1 id="hall-title">Syssi Demnati</h1>
+    <h1 id="hall-title"><span class="hall__stroke" aria-hidden="true"></span>Syssi Demnati</h1>
     <p class="hall__quote">« L’Art est beau quand la main, la tête et le cœur travaillent ensemble. »</p>
     <p class="hall__choose">Deux salles, deux ambiances. Choisissez la vôtre.</p>
     <div class="doors">

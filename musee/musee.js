@@ -322,3 +322,39 @@ show(fromHash(), false);
   paintCounts();
   paintAccount();
 })();
+
+// ---------------------------------------------------------------
+// Living background: brush strokes in her palette paint themselves
+// across the walls, then fade. A few at a time, paused when hidden.
+// ---------------------------------------------------------------
+(function paintLoop() {
+  const layer = document.getElementById("paint");
+  const COLORS = ["#c9a25e", "#c8644a", "#6b4766", "#6f9a8d", "#b9607a", "#3b5ea8", "#e0b43c", "#2f7d5b"];
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const MAX = innerWidth < 700 ? 4 : 7;
+  function stroke(life) {
+    const s = document.createElement("span");
+    s.className = "stroke";
+    const st = s.style;
+    st.setProperty("--x", `${rnd(5, 95).toFixed(1)}%`);
+    st.setProperty("--y", `${rnd(8, 92).toFixed(1)}%`);
+    st.setProperty("--w", `${rnd(28, innerWidth < 700 ? 90 : 55).toFixed(1)}vw`);
+    st.setProperty("--rot", `${rnd(-28, 28).toFixed(1)}deg`);
+    st.setProperty("--flip", Math.random() < 0.5 ? -1 : 1);
+    st.setProperty("--c", COLORS[(Math.random() * COLORS.length) | 0]);
+    st.setProperty("--m", `url("/assets/brush/stroke-${1 + ((Math.random() * 3) | 0)}.webp")`);
+    st.setProperty("--life", `${life.toFixed(1)}s`);
+    layer.appendChild(s);
+    s.addEventListener("animationend", () => s.remove());
+    return s;
+  }
+  if (reduceMotion) {
+    for (let i = 0; i < 5; i++) stroke(1);
+    return;
+  }
+  for (let i = 0; i < 4; i++) setTimeout(() => stroke(rnd(9, 13)), i * 500);
+  setInterval(() => {
+    if (document.hidden || layer.childElementCount >= MAX) return;
+    stroke(rnd(9, 14));
+  }, 1700);
+})();

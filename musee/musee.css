@@ -328,13 +328,92 @@ dialog::backdrop { background: rgba(5, 4, 4, .82); }
   .cartel p { font-size: 11.5px; }
   .like, .avis { height: 36px; padding: 0 11px; font-size: 13px; }
 }
-@media (hover: none) {
-  /* on touch screens the doors stand slightly ajar */
-  .door__leaf--l { transform: rotateY(-28deg); }
-  .door__leaf--r { transform: rotateY(28deg); }
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
   .piece { opacity: 1; transform: none; }
+}
+
+/* =================================================================
+   The living background: ceiling spotlights, a glossy floor, and brush
+   strokes that paint themselves across the walls, then dry and fade.
+   ================================================================= */
+.atelier { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; --paint-alpha: .34; }
+body[data-salle="noire"] .atelier, body[data-salle="blanche"] .atelier { --paint-alpha: .13; }
+body[data-salle="blanche"] .atelier { --paint-alpha: .16; }
+.atelier__spots { position: absolute; inset: 0; display: flex; justify-content: space-around; }
+.atelier__spots span {
+  width: 34vw; height: 95vh; margin-top: -8vh;
+  background: radial-gradient(50% 100% at 50% 0%, var(--spot-cone, rgba(255, 228, 180, .10)), transparent 70%);
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  animation: breathe 9s ease-in-out infinite alternate;
+}
+.atelier__spots span:nth-child(2) { animation-delay: -3s; }
+.atelier__spots span:nth-child(3) { animation-delay: -6s; }
+@keyframes breathe { from { opacity: .55; } to { opacity: 1; } }
+body[data-salle="blanche"] { --spot-cone: rgba(255, 255, 255, .85); }
+.atelier__floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26vh;
+  background: linear-gradient(to top, rgba(201, 162, 94, .07), transparent);
+}
+body[data-salle="blanche"] .atelier__floor { background: linear-gradient(to top, rgba(120, 95, 60, .08), transparent) }
+.atelier__grain {
+  position: absolute; inset: 0; opacity: .5; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.atelier__paint { position: absolute; inset: 0; opacity: var(--paint-alpha); transition: opacity 1.2s ease; }
+body[data-salle="blanche"] .atelier__paint { mix-blend-mode: multiply; }
+.stroke {
+  position: absolute; left: var(--x); top: var(--y); width: var(--w); aspect-ratio: 5 / 1;
+  background: var(--c);
+  -webkit-mask: var(--m) center / 100% 100% no-repeat;
+          mask: var(--m) center / 100% 100% no-repeat;
+  transform: translate(-50%, -50%) rotate(var(--rot)) scaleX(var(--flip));
+  clip-path: inset(0 100% 0 0);
+  animation: brush var(--life) cubic-bezier(.65, .05, .25, 1) forwards;
+  will-change: clip-path, opacity;
+}
+@keyframes brush {
+  0% { clip-path: inset(0 100% 0 0); opacity: 1; }
+  18% { clip-path: inset(0 -4% 0 0); opacity: 1; }
+  70% { clip-path: inset(0 -4% 0 0); opacity: .9; }
+  100% { clip-path: inset(0 -4% 0 0); opacity: 0; }
+}
+
+/* the artist's name gets a gold stroke painted under it */
+.hall h1 { position: relative; display: inline-block; isolation: isolate; }
+.hall__stroke {
+  position: absolute; left: -6%; right: -6%; top: 46%; height: 52%; z-index: -1;
+  background: linear-gradient(90deg, #c9a25e, #c8644a 60%, #b9607a);
+  -webkit-mask: url("/assets/brush/stroke-1.webp") center / 100% 100% no-repeat;
+          mask: url("/assets/brush/stroke-1.webp") center / 100% 100% no-repeat;
+  opacity: .55; transform: rotate(-2deg);
+  clip-path: inset(0 100% 0 0); animation: hallStroke 1.4s cubic-bezier(.65, .05, .25, 1) .5s forwards;
+}
+@keyframes hallStroke { to { clip-path: inset(0 -4% 0 0); } }
+
+/* doors: lit from inside, slightly ajar so you can see the room */
+.door { transition: transform .7s var(--ease), box-shadow .7s var(--ease); }
+.door--noire { box-shadow: 0 0 0 1px #3a2f22, 0 40px 80px -40px rgba(0, 0, 0, .9), 0 0 90px -20px rgba(201, 162, 94, .28); }
+.door--blanche { box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .9), 0 0 110px -10px rgba(255, 248, 235, .35); }
+.door__leaf--l { transform: rotateY(-50deg); }
+.door__leaf--r { transform: rotateY(50deg); }
+.door:hover { transform: translateY(-6px); }
+.door:hover .door__leaf--l, .door:focus-visible .door__leaf--l { transform: rotateY(-80deg); }
+.door:hover .door__leaf--r, .door:focus-visible .door__leaf--r { transform: rotateY(80deg); }
+.door__plate { transition: transform .7s var(--ease); }
+.door:hover .door__plate { transform: translateX(-50%) translateY(-6px); }
+.hall > * { animation: rise 1s var(--ease) both; }
+.hall > :nth-child(2) { animation-delay: .1s; }
+.hall > :nth-child(3) { animation-delay: .25s; }
+.hall > :nth-child(4) { animation-delay: .4s; }
+.hall > :nth-child(5) { animation-delay: .55s; }
+.hall > :nth-child(6) { animation-delay: .7s; }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+body { background-color: var(--wall); }
+
+@media (prefers-reduced-motion: reduce) {
+  .stroke { animation: none; clip-path: none; opacity: .8; }
+  .atelier__spots span { animation: none; }
 }

@@ -646,28 +646,55 @@ svg .fill { fill: currentColor; stroke: none; }
 }
 
 /* ---------- Vers le musée ---------- */
+/* Two doors side by side: a dark painting and a light one, joined by a gold brush stroke */
 .visit { max-width: 720px; margin: 10px auto 34px; }
 .visit__door {
-  position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
-  padding: 30px 30px 30px 34px; border-radius: 24px; overflow: hidden; isolation: isolate;
-  color: var(--cream); text-decoration: none; border: 1px solid rgba(201,162,94,.45);
+  position: relative; display: flex; align-items: center; min-height: 168px;
+  padding: 26px 26px 26px 30px; border-radius: 24px; overflow: hidden; isolation: isolate;
+  color: var(--cream); text-decoration: none; border: 1px solid rgba(201,162,94,.5);
   box-shadow: var(--shadow); transition: transform .5s var(--ease), border-color .4s;
 }
-.visit__halves { position: absolute; inset: 0; z-index: -1; display: grid; grid-template-columns: 1fr 1fr; }
-.visit__half { transition: transform .8s var(--ease); }
-.visit__half--noire { background: radial-gradient(120% 90% at 30% 0%, #2c2420, #0d0b0a 70%); }
-.visit__half--blanche { background: radial-gradient(120% 90% at 70% 0%, #fbf8f2, #e4ddd0 75%); }
-.visit__text { display: grid; gap: 6px; }
+.visit__halves { position: absolute; inset: 0; z-index: -1; display: grid; grid-template-columns: 58% 42%; }
+.visit__half { position: relative; overflow: hidden; }
+.visit__half img { position: absolute; inset: -6%; width: 112%; height: 112%; object-fit: cover; transition: transform 1.2s var(--ease); }
+/* dark side: the painting sinks into the night so the text stays readable */
+.visit__half--noire img { opacity: .55; }
+.visit__half--noire::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(13,11,10,.96) 0%, rgba(13,11,10,.82) 55%, rgba(13,11,10,.35) 100%);
+}
+/* light side: a white gallery wall with the painting hung in it */
+.visit__half--blanche { background: radial-gradient(90% 80% at 50% 20%, #fffdf8, #e9e1d3); clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%); margin-left: -8%; }
+.visit__half--blanche img {
+  inset: 14% auto auto 24%; height: 60%; width: auto; aspect-ratio: 480 / 560; object-fit: cover; z-index: 1;
+  box-shadow: 0 0 0 5px #fbf8f2, 0 0 0 6px #d8cdb9, 0 18px 24px -12px rgba(60,45,25,.45);
+}
+.visit__stroke {
+  position: absolute; left: -10%; bottom: 4%; width: 95%; height: 30%;
+  background: var(--gold); opacity: .85;
+  -webkit-mask: url("assets/brush/stroke-2.webp") center / 100% 100% no-repeat;
+          mask: url("assets/brush/stroke-2.webp") center / 100% 100% no-repeat;
+  transform: rotate(-6deg); clip-path: inset(0 100% 0 0); transition: clip-path 1.1s cubic-bezier(.65,.05,.25,1);
+}
+.visit.in .visit__stroke { clip-path: inset(0 -5% 0 0); transition-delay: .4s; }
+.visit__text { display: grid; gap: 6px; max-width: 54%; }
 .visit__eyebrow { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
-.visit__title { font: italic 600 clamp(28px, 4vw, 40px)/1.05 var(--display); mix-blend-mode: difference; color: #f4ede1; }
-.visit__sub { font-size: 13.5px; mix-blend-mode: difference; color: #cfc6b8; }
+.visit__title { font: italic 600 clamp(26px, 4vw, 40px)/1.02 var(--display); }
+.visit__sub { font-size: 13.5px; color: var(--muted); }
 .visit__arrow {
+  position: absolute; right: 22px; bottom: 22px;
   width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-size: 22px;
-  background: var(--gold); color: #141210; transition: transform .5s var(--ease);
+  background: #141210; color: var(--gold); border: 1px solid var(--gold); transition: transform .5s var(--ease), background-color .4s, color .4s;
 }
 .visit__door:hover, .visit__door:focus-visible { transform: translateY(-3px); border-color: var(--gold); }
-.visit__door:hover .visit__half--noire { transform: translateX(-4%); }
-.visit__door:hover .visit__half--blanche { transform: translateX(4%); }
-.visit__door:hover .visit__arrow { transform: translateX(4px); }
+.visit__door:hover .visit__half img { transform: scale(1.06); }
+.visit__door:hover .visit__arrow { transform: translateX(4px); background: var(--gold); color: #141210; }
+@media (max-width: 480px) {
+  .visit__door { min-height: 150px; padding: 22px 18px; }
+  .visit__halves { grid-template-columns: 62% 38%; }
+  .visit__text { max-width: 62%; }
+  .visit__half--blanche img { left: 14%; height: 52%; }
+  .visit__title { font-size: 25px; }
+  .visit__arrow { width: 44px; height: 44px; right: 14px; bottom: 14px; font-size: 18px; }
+}
 .foot a { color: var(--gold); text-underline-offset: 3px; }
-@media (max-width: 480px) { .visit__door { padding: 24px 20px 24px 22px; } .visit__arrow { width: 46px; height: 46px; } }
