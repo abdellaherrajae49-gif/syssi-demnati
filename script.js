@@ -141,8 +141,10 @@ function frame() {
       if (!wide.matches && y < vh * 1.2) cardArt.style.transform = `translate3d(0, ${(y * 0.18).toFixed(1)}px, 0) scale(1.1)`;
       const offset = vh - (gridTop - y);
       if (offset > -200) {
+        // gentler drift on phones so the two columns stay evenly spaced
+        const k = colCount === 2 ? 0.35 : 1;
         cols.forEach((c, i) => {
-          c.style.transform = `translate3d(0, ${(offset * COL_SPEED[i]).toFixed(1)}px, 0)`;
+          c.style.transform = `translate3d(0, ${(offset * COL_SPEED[i] * k).toFixed(1)}px, 0)`;
         });
       }
     }

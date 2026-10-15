@@ -599,3 +599,29 @@ svg .fill { fill: currentColor; stroke: none; }
 @media (min-width: 1100px) and (prefers-reduced-motion: reduce) {
   .frame { animation: none; }
 }
+
+/* =========================================================
+   Phone spacing
+   ========================================================= */
+@media (max-width: 480px) {
+  .card { margin-bottom: 96px; }
+  .card__body { padding: 38px 18px 118px; }
+  .avatar-wrap { margin-top: 60px; }
+  .signature { width: 172px; margin: 12px 0 -4px; }
+  .tagline { margin: 8px 0 22px; font-size: 16px; }
+  .links { gap: 14px; }
+  .marquee { margin: 28px -5vw 18px; }
+  .works__head { margin-bottom: 26px; }
+  .grid { padding-bottom: 40px; }
+  .foot { padding-top: 16px; }
+}
+@media (max-width: 360px) {
+  .thought { width: 94%; }
+  .cloud { padding: 16px 16px 14px; }
+  .cloud blockquote { font-size: 15.5px; }
+  .tagline { font-size: 15px; }
+  .link { grid-template-columns: 40px 1fr 24px; font-size: 13.5px; min-height: 54px; }
+  .link__label { white-space: nowrap; }
+  .link__icon { width: 40px; height: 40px; }
+  .paint { inset: -10px -12px -10px -10px; }
+}
