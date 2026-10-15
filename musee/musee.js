@@ -544,13 +544,13 @@ $$("dialog").forEach((d) => {
 // ---------------------------------------------------------------
 const expos = window.EXPOSITIONS || [];
 const place = (x) => `${esc(x.lieu)}${x.ville ? `, ${esc(x.ville)}` : ""}`;
-const li = (x) => `<li><span class="expo-list__date">${esc(x.dates || x.annee)}</span><span class="expo-list__place">${x.titre ? `<em>${esc(x.titre)}</em> · ` : ""}${place(x)}</span></li>`;
+const li = (x) => `<li><span class="expo-list__date">${esc(x.dates || x.annee || x.date || "")}</span><span class="expo-list__place">${x.titre ? `<em>${esc(x.titre)}</em> · ` : ""}${place(x)}</span></li>`;
 const next = expos.filter((x) => x.quand === "avenir");
 $("#expo-next").innerHTML = next.map(li).join("");
 $("#expo-next-wrap").hidden = !next.length;
 $("#expo-past").innerHTML = expos.filter((x) => x.quand !== "avenir").map((x, i) => `
   <li class="timeline__item" style="--i:${i}">
-    <span class="timeline__year">${esc(x.annee)}</span>
+    <span class="timeline__year">${esc(x.annee || x.date || "")}</span>
     <div class="timeline__body">
       ${x.titre ? `<h4>${esc(x.titre)}</h4>` : ""}
       <p class="timeline__place">${place(x)}</p>
