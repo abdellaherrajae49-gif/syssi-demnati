@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Syssi Demnati · Artiste peintre</title>
+  <meta name="description" content="Peintures abstraites originales de Syssi Demnati. Découvrez ses œuvres et suivez-la sur Instagram, TikTok et Snapchat.">
+  <meta name="theme-color" content="#160e12">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Syssi Demnati · Artiste peintre">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:description" content="Peintures abstraites originales. Encre, ligne et couleur.">
+  <meta property="og:image" content="/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Fond vivant : taches de couleur de sa palette qui dérivent, grain de toile, lignes d’encre -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="aurora">
+      <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+      <span class="blob b4"></span><span class="blob b5"></span>
+    </div>
+    <svg class="ink" viewBox="0 0 800 1600" preserveAspectRatio="xMidYMid slice">
+      <path d="M-40 220 C 160 80, 320 360, 520 210 S 860 120, 900 320" />
+      <path d="M-60 760 C 120 620, 260 940, 470 800 S 760 600, 880 860" />
+      <path d="M120 1640 C 220 1440, 80 1260, 260 1180 S 620 1320, 700 1060" />
+      <path d="M900 1500 C 700 1400, 760 1200, 560 1240 S 300 1100, -40 1300" />
+    </svg>
+    <div class="grain"></div>
+  </div>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"></div>
+
+  <main class="page">
+    <!-- Carte de profil -->
+    <section class="card" aria-labelledby="artist-name">
+      <div class="card__art" aria-hidden="true"><div class="card__art-img" style="background-image: url('assets/works/01-1000.webp')"></div></div>
+
+      <div class="card__body">
+        <figure class="thought reveal" style="--d: .15s">
+          <div class="cloud">
+            <span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span>
+            <span class="puff p4"></span><span class="puff p5"></span><span class="puff p6"></span>
+            <blockquote>L’Art est beau quand la main, la tête et le cœur travaillent ensemble.</blockquote>
+          </div>
+          <span class="trail t1" aria-hidden="true"></span>
+          <span class="trail t2" aria-hidden="true"></span>
+        </figure>
+        <div class="avatar-wrap reveal" style="--d: .35s">
+          <img class="avatar" src="assets/avatar.webp" width="112" height="112" alt="Détail d’une peinture de Syssi Demnati : un visage de femme tissé de lignes noires">
+        </div>
+        <img class="signature" src="assets/signature.png" width="400" height="360" alt="">
+        <h1 id="artist-name" class="name reveal" style="--d: 1.4s">Syssi Demnati</h1>
+        <p class="tagline reveal" style="--d: 1.5s">Peintre abstraite · encre, ligne &amp; couleur</p>
+
+        <nav class="links" aria-label="Liens">
+          <a class="link link--gallery reveal" style="--d: 1.6s" href="#works">
+            <span class="paint" aria-hidden="true"></span>
+            <span class="link__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="9" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="5.5" rx="1.5"/><rect x="3" y="15" width="7.5" height="6" rx="1.5"/><rect x="13.5" y="11.5" width="7.5" height="9.5" rx="1.5"/></svg>
+            </span>
+            <span class="link__label">Voir la galerie</span>
+            <span class="link__arrow" aria-hidden="true">↓</span>
+          </a>
+          <a class="link link--ig reveal" style="--d: 1.68s" href="https://www.instagram.com/syssidemnati" target="_blank" rel="noopener">
+            <span class="paint" aria-hidden="true"></span>
+            <span class="link__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" class="fill"/></svg>
+            </span>
+            <span class="link__label">Instagram</span>
+            <span class="link__arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="link link--tt reveal" style="--d: 1.76s" href="https://www.tiktok.com/@syssidemnati" target="_blank" rel="noopener">
+            <span class="paint paint--cyan" aria-hidden="true"></span>
+            <span class="paint paint--red" aria-hidden="true"></span>
+            <span class="paint" aria-hidden="true"></span>
+            <span class="link__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.9 2.4 4.7 5.5 5"/></svg>
+            </span>
+            <span class="link__label">TikTok</span>
+            <span class="link__arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="link link--snap reveal" style="--d: 1.84s" href="https://snapchat.com/t/BuJIPWbL" target="_blank" rel="noopener">
+            <span class="paint" aria-hidden="true"></span>
+            <span class="link__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3c3 0 5 2.2 5 5.2v2.4l1.9-.6c.6-.2 1 .6.5 1l-2.2 1.3c.6 1.8 1.9 3.1 3.6 3.6-.6.9-1.8 1.1-2.9 1.2l-.4 1.4c-1.4-.3-2.5.1-3.4.7-1.6 1.1-2.6 1.1-4.2 0-.9-.6-2-1-3.4-.7l-.4-1.4c-1.1-.1-2.3-.3-2.9-1.2 1.7-.5 3-1.8 3.6-3.6L4.6 11c-.5-.4-.1-1.2.5-1l1.9.6V8.2C7 5.2 9 3 12 3z"/></svg>
+            </span>
+            <span class="link__label">Snapchat</span>
+            <span class="link__arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="link link--mail reveal" style="--d: 1.92s" href="https://ig.me/m/syssidemnati" target="_blank" rel="noopener">
+            <span class="paint" aria-hidden="true"></span>
+            <span class="link__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>
+            </span>
+            <span class="link__label">Commandes &amp; contact</span>
+            <span class="link__arrow" aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Carte flottante « Dernière œuvre » -->
+      <button class="featured tilt" type="button" data-open="0" aria-label="Ouvrir la dernière œuvre">
+        <img src="assets/works/01-480.webp" width="480" height="721" alt="">
+        <span class="featured__label"><span class="dot" aria-hidden="true"></span>Dernière œuvre</span>
+      </button>
+    </section>
+
+    <!-- Bulles sociales flottantes (ordinateur) -->
+    <aside class="bubbles" aria-hidden="true">
+      <a href="https://www.instagram.com/syssidemnati" target="_blank" rel="noopener" tabindex="-1"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" class="fill"/></svg></a>
+      <a href="https://www.tiktok.com/@syssidemnati" target="_blank" rel="noopener" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.9 2.4 4.7 5.5 5"/></svg></a>
+      <a href="https://snapchat.com/t/BuJIPWbL" target="_blank" rel="noopener" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M12 3c3 0 5 2.2 5 5.2v2.4l1.9-.6c.6-.2 1 .6.5 1l-2.2 1.3c.6 1.8 1.9 3.1 3.6 3.6-.6.9-1.8 1.1-2.9 1.2l-.4 1.4c-1.4-.3-2.5.1-3.4.7-1.6 1.1-2.6 1.1-4.2 0-.9-.6-2-1-3.4-.7l-.4-1.4c-1.1-.1-2.3-.3-2.9-1.2 1.7-.5 3-1.8 3.6-3.6L4.6 11c-.5-.4-.1-1.2.5-1l1.9.6V8.2C7 5.2 9 3 12 3z"/></svg></a>
+    </aside>
+  </main>
+
+  <!-- Bandeau défilant, sa vitesse suit le scroll -->
+  <section class="marquee" aria-hidden="true">
+    <div class="marquee__row" data-dir="-1"><span class="marquee__track">L’Art est beau <i>✦</i> quand la main <i>✦</i> la tête <i>✦</i> et le cœur <i>✦</i> travaillent ensemble <i>✦</i>&nbsp;</span></div>
+    <div class="marquee__row marquee__row--alt" data-dir="1"><span class="marquee__track">Syssi Demnati <i>●</i> encre <i>●</i> ligne <i>●</i> couleur <i>●</i> œuvres originales <i>●</i>&nbsp;</span></div>
+  </section>
+
+  <div class="page">
+    <!-- Galerie -->
+    <section id="works" class="works" aria-labelledby="works-title">
+      <header class="works__head">
+        <p class="eyebrow reveal-on-scroll">Œuvres choisies</p>
+        <h2 id="works-title" class="split">Sur toile</h2>
+        <p class="works__hint reveal-on-scroll">Touchez une œuvre pour l’agrandir</p>
+      </header>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <footer class="foot reveal-on-scroll">
+      <img class="foot__sig" src="assets/signature.png" width="400" height="360" alt="">
+      <p>Site officiel bientôt disponible.</p>
+      <p class="muted">© <span id="year">2026</span> Syssi Demnati. Toutes les œuvres présentées sont des originaux.</p>
+    </footer>
+  </div>
+
+  <!-- Visionneuse -->
+  <dialog class="lightbox" id="lightbox" aria-label="Visionneuse d’œuvres">
+    <button class="lb-btn lb-close" type="button" aria-label="Fermer">✕</button>
+    <button class="lb-btn lb-prev" type="button" aria-label="Œuvre précédente">←</button>
+    <figure>
+      <img id="lb-img" alt="">
+      <figcaption id="lb-cap"></figcaption>
+    </figure>
+    <button class="lb-btn lb-next" type="button" aria-label="Œuvre suivante">→</button>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
