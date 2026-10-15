@@ -9,11 +9,28 @@ const WORKS = [
   { file: "06", title: "N° 06" },
   { file: "07", title: "N° 07" },
   { file: "08", title: "N° 08" },
+  { file: "09", title: "N° 09" },
+  { file: "10", title: "N° 10" },
+  { file: "11", title: "N° 11" },
+  { file: "12", title: "N° 12" },
+  { file: "13", title: "N° 13" },
+  { file: "14", title: "N° 14" },
+  { file: "15", title: "N° 15" },
+  { file: "16", title: "N° 16" },
+  { file: "17", title: "N° 17" },
+  { file: "18", title: "N° 18" },
+  { file: "19", title: "N° 19" },
+  { file: "20", title: "N° 20" },
+  { file: "21", title: "N° 21" },
+  { file: "22", title: "N° 22" },
+  { file: "23", title: "N° 23" },
+  { file: "24", title: "N° 24" },
+  { file: "25", title: "N° 25" },
 ];
 
 const small = (w) => `assets/works/${w.file}-480.webp`;
 const large = (w) => `assets/works/${w.file}-1000.webp`;
-const alt = (w) => `${w.title}, peinture abstraite de Syssi Demnati`;
+const alt = (w) => `${w.title}, œuvre de Syssi Demnati, acrylique sur toile`;
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const finePointer = window.matchMedia("(pointer: fine)").matches;
@@ -109,10 +126,12 @@ const progress = document.querySelector(".progress");
 const marquee = document.querySelector(".marquee");
 const frames = [...document.querySelectorAll(".frame")];
 const wide = window.matchMedia("(min-width: 1100px)");
-let gridTop = 0, maxScroll = 1, vh = window.innerHeight;
+let gridTop = 0, gridH = 1, maxScroll = 1, vh = window.innerHeight;
 function measure() {
   vh = window.innerHeight;
-  gridTop = grid.getBoundingClientRect().top + window.scrollY;
+  const gr = grid.getBoundingClientRect();
+  gridTop = gr.top + window.scrollY;
+  gridH = Math.max(1, gr.height);
   maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
   measureMarquee();
 }
@@ -139,12 +158,13 @@ function frame() {
       ink.style.transform = `translate3d(0, ${(-y * 0.25).toFixed(1)}px, 0)`;
       if (wide.matches && y < vh * 1.5) frames.forEach((f) => (f.style.translate = `0 ${(y * Number(f.dataset.speed)).toFixed(1)}px`));
       if (!wide.matches && y < vh * 1.2) cardArt.style.transform = `translate3d(0, ${(y * 0.18).toFixed(1)}px, 0) scale(1.1)`;
-      const offset = vh - (gridTop - y);
-      if (offset > -200) {
-        // gentler drift on phones so the two columns stay evenly spaced
-        const k = colCount === 2 ? 0.35 : 1;
+      // 0 when the gallery enters the screen, 1 when it leaves. The drift is
+      // centred on 0.5 and capped, so a long gallery never slides into what follows.
+      const t = Math.min(1, Math.max(0, (y + vh - gridTop) / (gridH + vh)));
+      if (t > 0 && t < 1) {
+        const amp = colCount === 2 ? 180 : 600;
         cols.forEach((c, i) => {
-          c.style.transform = `translate3d(0, ${(offset * COL_SPEED[i] * k).toFixed(1)}px, 0)`;
+          c.style.transform = `translate3d(0, ${((t - 0.5) * amp * COL_SPEED[i]).toFixed(1)}px, 0)`;
         });
       }
     }

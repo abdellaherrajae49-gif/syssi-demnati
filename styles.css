@@ -625,3 +625,22 @@ svg .fill { fill: currentColor; stroke: none; }
   .link__icon { width: 40px; height: 40px; }
   .paint { inset: -10px -12px -10px -10px; }
 }
+
+/* ---------- L’artiste ---------- */
+.about { max-width: 720px; margin: 40px auto 30px; }
+.about__text {
+  margin: 0 auto; font: 400 italic clamp(17px, 2vw, 21px)/1.65 var(--display);
+  color: var(--cream); text-align: center; text-wrap: pretty;
+}
+.about__facts {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 34px 0 0;
+  background: rgba(239,230,214,.12); border: 1px solid rgba(239,230,214,.12); border-radius: 18px; overflow: hidden;
+}
+.about__facts div { background: var(--bg); padding: 18px 16px; text-align: center; }
+.about__facts dt { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.about__facts dd { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--cream); }
+@media (max-width: 640px) {
+  .about { margin: 24px auto 18px; }
+  .about__facts { grid-template-columns: 1fr; }
+  .about__facts div { padding: 14px; }
+}
