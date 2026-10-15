@@ -563,8 +563,9 @@ svg .fill { fill: currentColor; stroke: none; }
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 260'%3E%3Cg fill='white'%3E%3Crect x='40' y='62' width='320' height='146' rx='70'/%3E%3Ccircle cx='92' cy='98' r='54'/%3E%3Ccircle cx='168' cy='72' r='62'/%3E%3Ccircle cx='252' cy='74' r='58'/%3E%3Ccircle cx='322' cy='108' r='50'/%3E%3Ccircle cx='348' cy='164' r='44'/%3E%3Ccircle cx='292' cy='204' r='48'/%3E%3Ccircle cx='200' cy='212' r='50'/%3E%3Ccircle cx='114' cy='204' r='48'/%3E%3Ccircle cx='54' cy='158' r='44'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
   }
   .cloud--big .puff { display: none; }
-  .cloud--big blockquote { font-size: clamp(19px, 1.45vw, 23px); line-height: 1.32; text-wrap: balance; }
-  .cloud--big blockquote::before { font-size: 46px; height: 22px; margin-top: -4px; }
+  .cloud--big { display: grid; place-items: center; min-height: 250px; padding: 56px 54px 58px; }
+  .cloud--big blockquote { font-size: clamp(19px, 1.45vw, 23px); line-height: 1.32; text-wrap: balance; text-align: center; }
+  .cloud--big blockquote::before { font-size: 46px; height: 22px; margin-top: -4px; text-align: center; }
   /* the thought trail: two small bubbles drifting towards the paintings */
   .stage__quote::before, .stage__quote::after {
     content: ""; position: absolute; border-radius: 50%;
@@ -574,7 +575,7 @@ svg .fill { fill: currentColor; stroke: none; }
   .stage__quote::before { width: 22px; height: 22px; right: 8px; bottom: 26px; }
   .stage__quote::after { width: 12px; height: 12px; right: -14px; bottom: 6px; animation-delay: .4s; }
   .stage__quote figcaption {
-    margin: 16px 0 0 34px;
+    margin: 14px 0 0; text-align: center;
     font: 700 11.5px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase;
     color: var(--saffron);
   }

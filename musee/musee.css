@@ -312,8 +312,9 @@ dialog::backdrop { background: rgba(5, 4, 4, .82); }
 @media (max-width: 720px) {
   .top { gap: 10px; flex-wrap: wrap; }
   .top__brand span { display: none; }
-  .top__nav { order: 3; width: 100%; justify-content: space-between; gap: 0; }
-  .top__nav a { padding: 8px 10px; font-size: 13px; }
+  .top__nav { order: 3; width: calc(100% + 32px); margin: 0 -16px; padding: 0 10px; justify-content: flex-start; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .top__nav::-webkit-scrollbar { display: none; }
+  .top__nav a { padding: 7px 12px; font-size: 13px; white-space: nowrap; }
   .top__account-label { display: none; }
   .top__account { padding: 6px; }
   .doors { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -417,3 +418,156 @@ body { background-color: var(--wall); }
   .stroke { animation: none; clip-path: none; opacity: .8; }
   .atelier__spots span { animation: none; }
 }
+
+/* =================================================================
+   Hall wings: each door stands in its own room. The dark wing has a
+   spotlight and drifting gold dust; the white wing has daylight beams.
+   ================================================================= */
+.doors {
+  display: flex; gap: 0; perspective: none;
+  margin: 0 calc(50% - 50vw); width: 100vw;
+  border-top: 1px solid var(--line);
+}
+.wing {
+  position: relative; isolation: isolate; overflow: hidden;
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: clamp(40px, 7vh, 70px) 3vw clamp(40px, 6vh, 60px);
+  transition: flex-grow .9s var(--ease);
+}
+.wing:hover, .wing:focus-within { flex-grow: 1.32; }
+.wing--noire { background: #0c0a09; color: #efe6d6; }
+.wing--blanche { background: #f6f2ea; color: #1d1a17; }
+.wing__fx { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.wing__light { position: absolute; inset: 0; transition: opacity .9s ease; }
+.wing--noire .wing__light {
+  background:
+    radial-gradient(38% 55% at 50% 0%, rgba(255, 226, 170, .22), transparent 70%),
+    radial-gradient(60% 40% at 50% 100%, rgba(201, 162, 94, .10), transparent 70%);
+  opacity: .75;
+}
+.wing--blanche .wing__light {
+  background:
+    radial-gradient(50% 60% at 50% 10%, #fffefb, transparent 75%),
+    linear-gradient(to top, rgba(160, 130, 90, .14), transparent 30%);
+  opacity: .85;
+}
+.wing:hover .wing__light { opacity: 1; }
+.wing__paint { position: absolute; inset: 0; opacity: .5; }
+.wing--blanche .wing__paint { mix-blend-mode: multiply; opacity: .32; }
+
+/* gold dust floating up through the spotlight */
+.wing__dust {
+  position: absolute; bottom: -10px; width: 3px; height: 3px; border-radius: 50%;
+  background: #f3d79b; box-shadow: 0 0 6px 1px rgba(243, 215, 155, .7);
+  animation: dust 9s linear infinite; opacity: 0;
+}
+.wing__dust:nth-child(3n) { width: 2px; height: 2px; animation-duration: 12s; }
+.wing__dust:nth-child(5n) { width: 4px; height: 4px; animation-duration: 7s; }
+.wing__dust:nth-child(3) { left: 12%; animation-delay: -1s; }
+.wing__dust:nth-child(4) { left: 22%; animation-delay: -6s; }
+.wing__dust:nth-child(5) { left: 31%; animation-delay: -3s; }
+.wing__dust:nth-child(6) { left: 39%; animation-delay: -8s; }
+.wing__dust:nth-child(7) { left: 46%; animation-delay: -2s; }
+.wing__dust:nth-child(8) { left: 53%; animation-delay: -5s; }
+.wing__dust:nth-child(9) { left: 60%; animation-delay: -9s; }
+.wing__dust:nth-child(10) { left: 68%; animation-delay: -4s; }
+.wing__dust:nth-child(11) { left: 75%; animation-delay: -7s; }
+.wing__dust:nth-child(12) { left: 83%; animation-delay: -1.5s; }
+.wing__dust:nth-child(13) { left: 90%; animation-delay: -10s; }
+.wing__dust:nth-child(14) { left: 6%; animation-delay: -11s; }
+@keyframes dust {
+  0% { transform: translate(0, 0); opacity: 0; }
+  12% { opacity: .9; }
+  50% { transform: translate(14px, -45vh); }
+  85% { opacity: .6; }
+  100% { transform: translate(-8px, -90vh); opacity: 0; }
+}
+.wing:hover .wing__dust { animation-duration: 5s; }
+
+/* daylight falling through a high window */
+.wing__beam {
+  position: absolute; top: -20%; width: 18%; height: 150%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 80%);
+  transform: rotate(24deg); transform-origin: top center; filter: blur(2px);
+  animation: sway 11s ease-in-out infinite alternate;
+}
+.wing__beam:nth-child(3) { left: 8%; }
+.wing__beam:nth-child(4) { left: 40%; width: 12%; animation-delay: -4s; }
+.wing__beam:nth-child(5) { left: 70%; width: 22%; animation-delay: -7s; }
+@keyframes sway { from { transform: rotate(20deg); opacity: .55; } to { transform: rotate(28deg); opacity: .95; } }
+
+.wing .door { width: min(100%, 300px, calc(46vh * 3 / 4.2)); }
+.wing__line { margin: 24px 0 6px; max-width: 30ch; text-align: center; font: italic 400 16px/1.45 var(--display); opacity: .8; }
+.wing__cta {
+  display: inline-flex; gap: 8px; align-items: center; margin-top: 8px; padding: 11px 20px; border-radius: 999px;
+  text-decoration: none; font-weight: 700; font-size: 13.5px; transition: background-color .3s, color .3s, transform .3s var(--ease);
+}
+.wing--noire .wing__cta { border: 1px solid rgba(201, 162, 94, .6); color: #e8c98d; }
+.wing--noire .wing__cta:hover { background: #c9a25e; color: #141210; }
+.wing--blanche .wing__cta { border: 1px solid rgba(29, 26, 23, .5); color: #1d1a17; }
+.wing--blanche .wing__cta:hover { background: #1d1a17; color: #f6f2ea; }
+.wing__cta:hover { transform: translateX(3px); }
+.wing--noire .door { box-shadow: 0 0 0 1px #3a2f22, 0 40px 80px -40px #000, 0 0 120px -10px rgba(255, 220, 160, .25); }
+.wing--blanche .door { box-shadow: 0 30px 60px -30px rgba(90, 70, 40, .45), 0 0 0 1px #d8cdb9; }
+.hall__more { display: flex; justify-content: center; gap: 14px; margin: 34px 0 0; font-weight: 600; }
+.hall__more a { color: var(--gold); text-underline-offset: 4px; }
+.hall__more span { color: var(--muted); }
+.hall { padding-bottom: 50px; }
+.hall__choose { margin-bottom: 30px; }
+
+/* walking through a door: its room spreads over the whole screen */
+.sweep { position: fixed; inset: 0; z-index: 80; pointer-events: none; transition: clip-path .75s cubic-bezier(.7, 0, .2, 1), opacity .45s ease; }
+.sweep--noire { background: radial-gradient(60% 60% at 50% 30%, #1d1814, #0c0a09); }
+.sweep--blanche { background: radial-gradient(60% 60% at 50% 30%, #fffefb, #f2ede4); }
+
+@media (max-width: 720px) {
+  .doors { flex-direction: column; }
+  .wing { padding: 34px 20px 36px; }
+  .wing .door { width: min(70vw, 260px); }
+  .wing, .wing:hover, .wing:focus-within { flex: none; }
+  .chips__sep { display: none; }
+  .doors { gap: 0; }
+}
+
+/* =================================================================
+   Collection: every work, filterable
+   ================================================================= */
+.collection { max-width: 1280px; margin: 0 auto; padding: clamp(40px, 8vh, 80px) max(16px, 4vw) 80px; }
+.collection__head { text-align: center; margin-bottom: 40px; }
+.collection__head h2 { margin: 0; font: 400 clamp(40px, 6vw, 76px)/1 var(--display); }
+.collection__intro { color: var(--muted); margin: 14px 0 22px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.chip {
+  padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: none;
+  font-size: 13.5px; font-weight: 600; color: var(--muted); transition: all .3s;
+}
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.chips__sep { width: 1px; background: var(--line); margin: 4px 6px; }
+.catalogue { columns: 4 240px; column-gap: 22px; }
+.card {
+  break-inside: avoid; margin: 0 0 22px; display: block; width: 100%; text-align: left;
+  padding: 0; border: 0; background: none; cursor: zoom-in;
+  animation: rise .7s var(--ease) both; animation-delay: calc(var(--i) * 40ms);
+}
+.card__img { position: relative; display: block; overflow: hidden; padding: 8px; background: var(--mat); border: 1px solid var(--line); box-shadow: 0 24px 34px -24px rgba(0, 0, 0, .7); }
+.card__img img { width: 100%; height: auto; transition: transform 1s var(--ease); }
+.card:hover .card__img img { transform: scale(1.05); }
+.card__meta { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 2px 0; }
+.card__meta strong { font: italic 600 17px/1.2 var(--display); }
+.card__meta span { font-size: 12.5px; color: var(--muted); }
+.card__badge { display: inline-flex; align-items: center; gap: 4px; }
+.card__badge svg { width: 13px; height: 13px; fill: #d2465a; }
+
+/* =================================================================
+   Viewer details
+   ================================================================= */
+.viewer__facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0 0 18px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.viewer__facts dt { color: var(--muted); }
+.viewer__facts dd { margin: 0; font-weight: 600; }
+.viewer__buy { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.viewer__buy .btn { text-decoration: none; }
+.viewer__more { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.viewer__more button { padding: 0; border: 0; background: none; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 3px; box-shadow: 0 0 0 1px var(--line); }
+.viewer__more img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.viewer__more button:hover img { transform: scale(1.08); }

@@ -84,12 +84,13 @@ function observePieces() {
 // ---------------------------------------------------------------
 // Moving between the hall, the two rooms and the agenda
 // ---------------------------------------------------------------
-const views = { hall: $("#hall"), room: $("#room"), expositions: $("#expositions") };
-function show(where, push = true) {
+const views = { hall: $("#hall"), room: $("#room"), collection: $("#collection"), expositions: $("#expositions") };
+function show(where, push = true, from) {
   const go = () => {
     const salle = where === "noire" || where === "blanche" ? where : null;
     views.hall.hidden = where !== "hall";
     views.room.hidden = !salle;
+    views.collection.hidden = where !== "collection";
     views.expositions.hidden = where !== "expositions";
     document.body.dataset.salle = salle || where;
     if (salle) {
@@ -103,6 +104,7 @@ function show(where, push = true) {
       });
       hang(salle);
     }
+    if (where === "collection") renderCollection();
     $$(".top__nav a").forEach((a) => a.toggleAttribute("aria-current", a.dataset.go === where));
     $("meta[name=theme-color]").content = where === "blanche" ? "#f4f0e9" : "#131110";
     scrollTo(0, 0);
@@ -110,7 +112,22 @@ function show(where, push = true) {
   };
   if (push) history.pushState(null, "", where === "hall" ? "/musee" : `#${where}`);
   if (reduceMotion || state.salle === where) return go();
-  // the lights dim, the room changes, the lights come back up
+  // walking through a door: that room's wall spreads over the whole screen
+  if (from && (where === "noire" || where === "blanche")) {
+    const r = from.getBoundingClientRect();
+    const sw = document.createElement("div");
+    sw.className = `sweep sweep--${where}`;
+    sw.style.clipPath = `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 120px 120px 6px 6px)`;
+    document.body.appendChild(sw);
+    requestAnimationFrame(() => requestAnimationFrame(() => { sw.style.clipPath = "inset(0 0 0 0 round 0)"; }));
+    setTimeout(() => {
+      go();
+      sw.style.opacity = "0";
+      setTimeout(() => sw.remove(), 500);
+    }, 780);
+    return;
+  }
+  // otherwise the lights dim, the room changes, the lights come back up
   document.body.classList.add("dim");
   setTimeout(() => { go(); requestAnimationFrame(() => document.body.classList.remove("dim")); }, 380);
 }
@@ -118,10 +135,50 @@ document.addEventListener("click", (e) => {
   const a = e.target.closest("[data-go]");
   if (!a) return;
   e.preventDefault();
-  show(a.dataset.go);
+  const door = a.dataset.door ? $(`.door--${a.dataset.door}`) : null;
+  show(a.dataset.go, true, door);
 });
-const fromHash = () => (["noire", "blanche", "expositions"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "hall");
-addEventListener("popstate", () => show(fromHash(), false));
+const VIEWS = ["noire", "blanche", "collection", "expositions"];
+const fromHash = () => {
+  const h = location.hash.slice(1);
+  if (h.startsWith("oeuvre-")) { const w = WORKS.find((x) => x.file === h.slice(7)); return w ? w.salle : "hall"; }
+  return VIEWS.includes(h) ? h : "hall";
+};
+addEventListener("popstate", () => {
+  const h = location.hash;
+  if (h.startsWith("#oeuvre-") && WORKS.some((w) => w.file === h.slice(8))) {
+    if (fromHash() !== state.salle) show(fromHash(), false);
+    return openWork(h.slice(8));
+  }
+  if (viewer.open) viewer.close();
+  show(fromHash(), false);
+});
+
+// ---------------------------------------------------------------
+// Collection: every work, filter by room, sort by likes
+// ---------------------------------------------------------------
+const coll = { filter: "toutes", sort: "ordre" };
+$("#coll-count").textContent = WORKS.length;
+function renderCollection() {
+  let list = WORKS.filter((w) => coll.filter === "toutes" || w.salle === coll.filter);
+  if (coll.sort === "aimees") list = list.slice().sort((a, b) => (state.likes[b.file] || 0) - (state.likes[a.file] || 0));
+  $("#catalogue").innerHTML = list.map((w, i) => `
+    <button class="card" type="button" data-view="${w.file}" style="--i:${i}" aria-label="Voir ${w.title}">
+      <span class="card__img"><img src="${img(w, 480)}" width="${w.w}" height="${w.h}" alt="${alt(w)}" loading="lazy" decoding="async"></span>
+      <span class="card__meta"><strong>${w.title}</strong><span class="card__badge">${state.likes[w.file] ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>${state.likes[w.file]} · ` : ""}${ROOMS[w.salle].eyebrow}</span></span>
+    </button>`).join("");
+}
+$$("[data-filter]").forEach((b) => b.addEventListener("click", () => {
+  coll.filter = b.dataset.filter;
+  $$("[data-filter]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  renderCollection();
+}));
+$("[data-sort]").addEventListener("click", (e) => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", on);
+  coll.sort = on ? "aimees" : "ordre";
+  renderCollection();
+});
 
 // ---------------------------------------------------------------
 // Likes
@@ -136,6 +193,7 @@ document.addEventListener("click", async (e) => {
     liked ? state.mine.add(w) : state.mine.delete(w);
     paintCounts();
     paintViewerLike();
+    if (state.salle === "collection") renderCollection();
     $$(`[data-like="${w}"], #v-like`).forEach((x) => {
       if (x.id === "v-like" && (!current || current.file !== w)) return;
       x.classList.remove("pop"); void x.offsetWidth; if (liked) x.classList.add("pop");
@@ -157,8 +215,20 @@ async function openWork(file, focusReviews) {
   $("#v-title").textContent = current.title;
   $("#v-salle").textContent = ROOMS[current.salle].eyebrow;
   viewer.dataset.salle = current.salle;
+  const r = current.w / current.h;
+  const format = r > 1.08 ? "Paysage" : r < 0.92 ? "Portrait" : "Carré";
+  $("#v-facts").innerHTML = [
+    ["Technique", "Acrylique sur toile"], ["Format", format], ["Salle", ROOMS[current.salle].eyebrow],
+    ["Authenticité", "Œuvre originale, signée"], ["Disponibilité", "Sur demande"],
+  ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+  const same = WORKS.filter((w) => w.salle === current.salle && w.file !== current.file);
+  const start = Math.max(0, same.findIndex((w) => w.file > current.file));
+  $("#v-more").innerHTML = [...same.slice(start), ...same.slice(0, start)].slice(0, 4)
+    .map((w) => `<button type="button" data-view="${w.file}" aria-label="Voir ${w.title}"><img src="${img(w, 480)}" alt="" loading="lazy"></button>`).join("");
+  history.replaceState(null, "", `#oeuvre-${current.file}`);
   paintViewerLike();
   paintGate();
+  $(".viewer__side").scrollTop = 0;
   if (!viewer.open) viewer.showModal();
   document.documentElement.classList.add("locked");
   await loadReviews();
@@ -195,6 +265,18 @@ const step = (d) => {
   const i = list.findIndex((w) => w.file === current.file);
   openWork(list[(i + d + list.length) % list.length].file);
 };
+// share a link that opens straight on this work
+$("#v-share").addEventListener("click", async () => {
+  const url = `${location.origin}/musee#oeuvre-${current.file}`;
+  const data = { title: `${current.title} · Syssi Demnati`, text: "Une œuvre de Syssi Demnati, acrylique sur toile", url };
+  try {
+    if (navigator.share) await navigator.share(data);
+    else { await navigator.clipboard.writeText(url); toast("Lien copié."); }
+  } catch {}
+});
+viewer.addEventListener("close", () => {
+  history.replaceState(null, "", state.salle === "hall" ? "/musee" : `#${state.salle}`);
+});
 $("#v-prev").addEventListener("click", () => step(-1));
 $("#v-next").addEventListener("click", () => step(1));
 viewer.addEventListener("keydown", (e) => {
@@ -312,7 +394,9 @@ function toast(msg) {
 // Start
 // ---------------------------------------------------------------
 $("#year").textContent = new Date().getFullYear();
+const startHash = location.hash;
 show(fromHash(), false);
+if (startHash.startsWith("#oeuvre-") && WORKS.some((w) => w.file === startHash.slice(8))) openWork(startHash.slice(8));
 (async () => {
   try { await store.init(); } catch { toast("Mode hors ligne : les j’aime et les avis sont indisponibles."); }
   const [likes, mine, stats] = await Promise.all([
@@ -320,6 +404,7 @@ show(fromHash(), false);
   ]);
   Object.assign(state, { likes, mine, stats });
   paintCounts();
+  if (state.salle === "collection") renderCollection();
   paintAccount();
 })();
 
@@ -328,11 +413,14 @@ show(fromHash(), false);
 // across the walls, then fade. A few at a time, paused when hidden.
 // ---------------------------------------------------------------
 (function paintLoop() {
-  const layer = document.getElementById("paint");
+  const LAYERS = [
+    { el: document.getElementById("paint"), max: innerWidth < 700 ? 3 : 6, visible: () => true },
+    { el: document.getElementById("paint-noire"), max: 3, visible: () => state.salle === "hall" },
+    { el: document.getElementById("paint-blanche"), max: 3, visible: () => state.salle === "hall" },
+  ];
   const COLORS = ["#c9a25e", "#c8644a", "#6b4766", "#6f9a8d", "#b9607a", "#3b5ea8", "#e0b43c", "#2f7d5b"];
   const rnd = (a, b) => a + Math.random() * (b - a);
-  const MAX = innerWidth < 700 ? 4 : 7;
-  function stroke(life) {
+  function stroke(layer, life) {
     const s = document.createElement("span");
     s.className = "stroke";
     const st = s.style;
@@ -346,15 +434,16 @@ show(fromHash(), false);
     st.setProperty("--life", `${life.toFixed(1)}s`);
     layer.appendChild(s);
     s.addEventListener("animationend", () => s.remove());
-    return s;
   }
   if (reduceMotion) {
-    for (let i = 0; i < 5; i++) stroke(1);
+    LAYERS.forEach((l) => { for (let i = 0; i < 3; i++) stroke(l.el, 1); });
     return;
   }
-  for (let i = 0; i < 4; i++) setTimeout(() => stroke(rnd(9, 13)), i * 500);
+  LAYERS.forEach((l) => { for (let i = 0; i < 2; i++) setTimeout(() => stroke(l.el, rnd(9, 13)), i * 600); });
   setInterval(() => {
-    if (document.hidden || layer.childElementCount >= MAX) return;
-    stroke(rnd(9, 14));
-  }, 1700);
+    if (document.hidden) return;
+    LAYERS.forEach((l) => {
+      if (l.visible() && l.el.childElementCount < l.max && Math.random() < 0.6) stroke(l.el, rnd(9, 14));
+    });
+  }, 1500);
 })();

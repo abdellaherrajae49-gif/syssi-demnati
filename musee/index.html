@@ -39,6 +39,7 @@
     <nav class="top__nav" aria-label="Salles">
       <a href="#noire" data-go="noire">Salle Noire</a>
       <a href="#blanche" data-go="blanche">Salle Blanche</a>
+      <a href="#collection" data-go="collection">Collection</a>
       <a href="#expositions" data-go="expositions">Expositions</a>
     </nav>
     <button class="top__account" type="button" id="account-btn" aria-haspopup="dialog">
@@ -53,26 +54,44 @@
     <p class="hall__quote">« L’Art est beau quand la main, la tête et le cœur travaillent ensemble. »</p>
     <p class="hall__choose">Deux salles, deux ambiances. Choisissez la vôtre.</p>
     <div class="doors">
-      <a class="door door--noire" href="#noire" data-go="noire">
-        <span class="door__room" data-preview="noire" aria-hidden="true"></span>
-        <span class="door__leaf door__leaf--l" aria-hidden="true"></span>
-        <span class="door__leaf door__leaf--r" aria-hidden="true"></span>
-        <span class="door__plate">
-          <span class="door__name">Salle Noire</span>
-          <span class="door__meta" data-count="noire"></span>
-        </span>
-      </a>
-      <a class="door door--blanche" href="#blanche" data-go="blanche">
-        <span class="door__room" data-preview="blanche" aria-hidden="true"></span>
-        <span class="door__leaf door__leaf--l" aria-hidden="true"></span>
-        <span class="door__leaf door__leaf--r" aria-hidden="true"></span>
-        <span class="door__plate">
-          <span class="door__name">Salle Blanche</span>
-          <span class="door__meta" data-count="blanche"></span>
-        </span>
-      </a>
+      <div class="wing wing--noire" data-wing="noire">
+        <div class="wing__fx" aria-hidden="true">
+          <span class="wing__light"></span>
+          <div class="wing__paint" id="paint-noire"></div>
+          <span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span><span class="wing__dust"></span>
+        </div>
+        <a class="door door--noire" href="#noire" data-go="noire" data-door="noire">
+          <span class="door__room" data-preview="noire" aria-hidden="true"></span>
+          <span class="door__leaf door__leaf--l" aria-hidden="true"></span>
+          <span class="door__leaf door__leaf--r" aria-hidden="true"></span>
+          <span class="door__plate">
+            <span class="door__name">Salle Noire</span>
+            <span class="door__meta" data-count="noire"></span>
+          </span>
+        </a>
+        <p class="wing__line">Toiles sombres, où la couleur surgit de la nuit.</p>
+        <a class="wing__cta" href="#noire" data-go="noire" data-door="noire">Entrer dans la nuit <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="wing wing--blanche" data-wing="blanche">
+        <div class="wing__fx" aria-hidden="true">
+          <span class="wing__light"></span>
+          <div class="wing__paint" id="paint-blanche"></div>
+          <span class="wing__beam"></span><span class="wing__beam"></span><span class="wing__beam"></span>
+        </div>
+        <a class="door door--blanche" href="#blanche" data-go="blanche" data-door="blanche">
+          <span class="door__room" data-preview="blanche" aria-hidden="true"></span>
+          <span class="door__leaf door__leaf--l" aria-hidden="true"></span>
+          <span class="door__leaf door__leaf--r" aria-hidden="true"></span>
+          <span class="door__plate">
+            <span class="door__name">Salle Blanche</span>
+            <span class="door__meta" data-count="blanche"></span>
+          </span>
+        </a>
+        <p class="wing__line">Toiles claires, où le trait danse en pleine lumière.</p>
+        <a class="wing__cta" href="#blanche" data-go="blanche" data-door="blanche">Entrer dans la lumière <span aria-hidden="true">→</span></a>
+      </div>
     </div>
-    <a class="hall__expo" href="#expositions" data-go="expositions">Expositions et actualités →</a>
+    <p class="hall__more"><a href="#collection" data-go="collection">Toute la collection</a><span aria-hidden="true">·</span><a href="#expositions" data-go="expositions">Expositions et actualités</a></p>
   </section>
 
   <!-- Une salle : les œuvres accrochées au mur -->
@@ -89,6 +108,23 @@
       <a class="room__back" href="/musee" data-go="hall">Retour au hall</a>
     </div>
   </main>
+
+  <!-- La collection complète -->
+  <section class="collection" id="collection" hidden aria-labelledby="coll-title">
+    <header class="collection__head">
+      <p class="eyebrow">Catalogue</p>
+      <h2 id="coll-title">La collection</h2>
+      <p class="collection__intro"><span id="coll-count"></span> toiles originales, acrylique sur toile, signées par l’artiste.</p>
+      <div class="chips" role="group" aria-label="Filtrer la collection">
+        <button type="button" class="chip" data-filter="toutes" aria-pressed="true">Toutes</button>
+        <button type="button" class="chip" data-filter="noire" aria-pressed="false">Salle Noire</button>
+        <button type="button" class="chip" data-filter="blanche" aria-pressed="false">Salle Blanche</button>
+        <span class="chips__sep" aria-hidden="true"></span>
+        <button type="button" class="chip" data-sort="aimees" aria-pressed="false">Les plus aimées</button>
+      </div>
+    </header>
+    <div class="catalogue" id="catalogue"></div>
+  </section>
 
   <!-- Expositions et abonnement -->
   <section class="expos" id="expositions" hidden aria-labelledby="expo-title">
@@ -130,6 +166,11 @@
       <p class="eyebrow" id="v-salle"></p>
       <h3 id="v-title"></h3>
       <p class="viewer__medium">Syssi Demnati · Acrylique sur toile</p>
+      <dl class="viewer__facts" id="v-facts"></dl>
+      <div class="viewer__buy">
+        <a class="btn btn--solid" id="v-ask" href="https://ig.me/m/syssidemnati" target="_blank" rel="noopener">Demander le prix</a>
+        <button class="btn" type="button" id="v-share">Partager</button>
+      </div>
       <div class="viewer__actions">
         <button class="like" type="button" id="v-like" aria-pressed="false"><svg class="like__heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="like__count" id="v-likes">0</span><span class="sr">J’aime</span></button>
         <span class="viewer__stars" id="v-avg"></span>
@@ -153,6 +194,8 @@
         <p>Connectez-vous avec votre e-mail pour laisser un avis.</p>
         <button class="btn" type="button" data-open-account>Se connecter</button>
       </div>
+      <h4>Dans la même salle</h4>
+      <div class="viewer__more" id="v-more"></div>
     </div>
   </dialog>
 
