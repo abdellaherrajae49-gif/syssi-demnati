@@ -36,9 +36,9 @@ const tiles = WORKS.map((w, i) => {
 
 let cols = [];
 let colCount = 0;
-const COL_SPEED = [0.06, -0.05, 0.1];
+const COL_SPEED = [0.06, -0.05, 0.1, -0.03];
 function layout() {
-  const n = window.innerWidth >= 760 ? 3 : 2;
+  const n = window.innerWidth >= 1700 ? 4 : window.innerWidth >= 760 ? 3 : 2;
   if (n === colCount) return;
   colCount = n;
   grid.innerHTML = "";
@@ -68,9 +68,24 @@ const io = "IntersectionObserver" in window
       });
     }, { rootMargin: "0px 0px -10% 0px" })
   : null;
-document.querySelectorAll(".tile, .split, .reveal-on-scroll").forEach((el) => {
+const revealables = [...document.querySelectorAll(".tile, .split, .reveal-on-scroll")];
+revealables.forEach((el) => {
   io ? io.observe(el) : el.classList.add("in");
 });
+// A fast jump (anchor link, scrollbar drag) can skip past an element without it
+// ever "intersecting", so after scrolling settles reveal anything at or above the fold.
+let settle;
+window.addEventListener("scroll", () => {
+  clearTimeout(settle);
+  settle = setTimeout(() => {
+    revealables.forEach((el) => {
+      if (!el.classList.contains("in") && el.getBoundingClientRect().top < window.innerHeight) {
+        el.classList.add("in");
+        io && io.unobserve(el);
+      }
+    });
+  }, 120);
+}, { passive: true });
 
 // ---------------------------------------------------------------
 // One animation loop for everything scroll-driven:
@@ -92,6 +107,8 @@ const ink = document.querySelector(".ink");
 const cardArt = document.querySelector(".card__art-img");
 const progress = document.querySelector(".progress");
 const marquee = document.querySelector(".marquee");
+const frames = [...document.querySelectorAll(".frame")];
+const wide = window.matchMedia("(min-width: 1100px)");
 let gridTop = 0, maxScroll = 1, vh = window.innerHeight;
 function measure() {
   vh = window.innerHeight;
@@ -120,7 +137,8 @@ function frame() {
     if (!reduceMotion) {
       aurora.style.transform = `translate3d(0, ${(-y * 0.12).toFixed(1)}px, 0)`;
       ink.style.transform = `translate3d(0, ${(-y * 0.25).toFixed(1)}px, 0)`;
-      if (y < vh * 1.2) cardArt.style.transform = `translate3d(0, ${(y * 0.18).toFixed(1)}px, 0) scale(1.1)`;
+      if (wide.matches && y < vh * 1.5) frames.forEach((f) => (f.style.translate = `0 ${(y * Number(f.dataset.speed)).toFixed(1)}px`));
+      if (!wide.matches && y < vh * 1.2) cardArt.style.transform = `translate3d(0, ${(y * 0.18).toFixed(1)}px, 0) scale(1.1)`;
       const offset = vh - (gridTop - y);
       if (offset > -200) {
         cols.forEach((c, i) => {

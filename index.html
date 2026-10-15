@@ -40,7 +40,8 @@
   <div class="glow" aria-hidden="true"></div>
   <div class="progress" aria-hidden="true"></div>
 
-  <main class="page">
+  <div class="layout">
+  <main class="page side">
     <!-- Carte de profil -->
     <section class="card" aria-labelledby="artist-name">
       <div class="card__art" aria-hidden="true"><div class="card__art-img" style="background-image: url('assets/works/01-1000.webp')"></div></div>
@@ -123,6 +124,28 @@
     </aside>
   </main>
 
+  <div class="content">
+  <!-- Scène d’accueil sur grand écran : la citation en grand et un collage d’œuvres -->
+  <section class="stage" aria-label="Présentation">
+    <div class="stage__text">
+      <p class="eyebrow">Artiste peintre · Œuvres originales</p>
+      <figure class="stage__quote">
+        <div class="cloud cloud--big">
+          <span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span>
+          <span class="puff p4"></span><span class="puff p5"></span><span class="puff p6"></span>
+          <blockquote>L’Art est beau quand la main, la tête et le cœur travaillent ensemble.</blockquote>
+        </div>
+        <figcaption>Syssi Demnati</figcaption>
+      </figure>
+      <a class="stage__cta" href="#works"><span>Découvrir les œuvres</span><span class="stage__arrow" aria-hidden="true">↓</span></a>
+    </div>
+    <div class="stage__collage">
+      <button class="frame frame--a tilt" type="button" data-open="1" data-speed="-0.06" aria-label="Ouvrir N° 02"><img loading="lazy" src="assets/works/02-1000.webp" width="750" height="1132" alt="N° 02, peinture abstraite de Syssi Demnati"></button>
+      <button class="frame frame--b tilt" type="button" data-open="0" data-speed="0.04" aria-label="Ouvrir la dernière œuvre"><img loading="lazy" src="assets/works/01-1000.webp" width="742" height="1115" alt="N° 01, peinture abstraite de Syssi Demnati"><span class="featured__label"><span class="dot" aria-hidden="true"></span>Dernière œuvre</span></button>
+      <button class="frame frame--c tilt" type="button" data-open="5" data-speed="-0.1" aria-label="Ouvrir N° 06"><img loading="lazy" src="assets/works/06-1000.webp" width="507" height="851" alt="N° 06, peinture abstraite de Syssi Demnati"></button>
+    </div>
+  </section>
+
   <!-- Bandeau défilant, sa vitesse suit le scroll -->
   <section class="marquee" aria-hidden="true">
     <div class="marquee__row" data-dir="-1"><span class="marquee__track">L’Art est beau <i>✦</i> quand la main <i>✦</i> la tête <i>✦</i> et le cœur <i>✦</i> travaillent ensemble <i>✦</i>&nbsp;</span></div>
@@ -146,6 +169,8 @@
       <p class="muted">© <span id="year">2026</span> Syssi Demnati. Toutes les œuvres présentées sont des originaux.</p>
     </footer>
   </div>
+  </div><!-- /.content -->
+  </div><!-- /.layout -->
 
   <!-- Visionneuse -->
   <dialog class="lightbox" id="lightbox" aria-label="Visionneuse d’œuvres">

@@ -328,7 +328,7 @@ svg .fill { fill: currentColor; stroke: none; }
 
 /* floating social bubbles (desktop) */
 .bubbles { display: none; }
-@media (min-width: 900px) {
+@media (min-width: 900px) and (max-width: 1099px) {
   .page { padding-top: 64px; }
   .bubbles {
     display: flex; flex-direction: column; gap: 16px;
@@ -492,4 +492,110 @@ svg .fill { fill: currentColor; stroke: none; }
   .tile img { transform: none; }
   .tile__no, .reveal-on-scroll, .split .ch { opacity: 1; transform: none; }
   .paint { clip-path: none; }
+}
+
+/* =========================================================
+   Desktop: two columns that fill the screen.
+   Left: the profile card stays in place. Right: a hero with the
+   quote and a collage of works, then the gallery.
+   ========================================================= */
+.stage { display: none; }
+
+@media (min-width: 1100px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 420px minmax(0, 1fr);
+    gap: clamp(40px, 4vw, 88px);
+    max-width: 1720px; margin: 0 auto;
+    padding: 0 clamp(28px, 3vw, 64px);
+    align-items: start;
+    position: relative; z-index: 1;
+  }
+  .side.page {
+    position: sticky; top: 0;
+    max-width: none; margin: 0; padding: 24px 0;
+    min-height: 100vh;
+    display: flex; align-items: center;
+  }
+  .card { margin: 0; width: 100%; }
+  .card .thought, .card .featured, .bubbles { display: none; }
+  .card__body { padding: 34px 26px 30px; }
+  .card .avatar-wrap { margin-top: 6px; }
+  .signature { width: 168px; margin-top: 10px; }
+  .tagline { margin-bottom: 20px; }
+  .links { gap: 12px; }
+  .link { min-height: 54px; }
+
+  .content { min-width: 0; overflow-x: clip; padding-top: 24px; }
+  .content .page { max-width: none; padding: 0; }
+
+  /* quote overlaps the left edge of the collage, like a page in an art book */
+  .stage {
+    display: grid; grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    min-height: calc(100vh - 48px);
+  }
+  .stage__collage, .stage__text { grid-area: 1 / 1; }
+  .stage__text {
+    position: relative; z-index: 4;
+    width: min(440px, 46%);
+    display: flex; flex-direction: column; align-items: flex-start; gap: 26px;
+    animation: rise-in 1s var(--ease) .3s both;
+  }
+  .stage__text .eyebrow { margin: 0; }
+  .stage__quote { margin: 52px 0 0; filter: drop-shadow(0 24px 40px rgba(0,0,0,.5)); animation: drift 7s ease-in-out 1.5s infinite; }
+  .cloud--big { padding: 34px 40px 30px; border-radius: 70px; }
+  .cloud--big .puff { scale: 1.3; }
+  .cloud--big .p2 { top: -40px; }
+  .cloud--big blockquote { font-size: clamp(24px, 2vw, 32px); line-height: 1.25; }
+  .cloud--big blockquote::before { font-size: 64px; height: 30px; }
+  .stage__quote figcaption {
+    margin: 34px 0 0 24px;
+    font: 700 11.5px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase;
+    color: var(--saffron);
+  }
+  .stage__quote figcaption::before { content: "— "; }
+  .stage__cta {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 14px 22px 14px 26px; border-radius: 999px;
+    border: 1px solid rgba(247,241,230,.35);
+    color: var(--cream); text-decoration: none;
+    font: 600 15px/1 var(--sans);
+    transition: background .3s, color .3s, transform .3s var(--ease);
+  }
+  .stage__cta:hover { background: var(--cream); color: #141210; transform: translateY(-2px); }
+  .stage__arrow { display: inline-block; animation: nudge 1.8s ease-in-out infinite; }
+  @keyframes nudge { 50% { transform: translateY(5px); } }
+
+  .stage__collage { position: relative; height: min(84vh, 880px); margin-left: 30%; }
+  .frame {
+    position: absolute; padding: 0; border: 0; cursor: zoom-in;
+    border-radius: 14px; overflow: hidden; background: #000;
+    box-shadow: 0 40px 70px -28px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.06);
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform .3s var(--ease), box-shadow .3s;
+    animation: frame-in 1.2s var(--ease) var(--fd) backwards;
+  }
+  .frame img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+  .frame:hover img { transform: scale(1.04); }
+  .frame:hover { box-shadow: 0 50px 90px -30px rgba(226,70,42,.5), 0 0 0 1px rgba(255,255,255,.1); }
+  .frame:focus-visible { outline: 3px solid var(--saffron); outline-offset: 4px; }
+  .frame--a { height: 66%; aspect-ratio: 750 / 1132; left: 2%; top: 18%; rotate: -7deg; z-index: 1; --fd: .5s; }
+  .frame--b { height: 78%; aspect-ratio: 742 / 1115; left: 30%; top: 2%; rotate: 3deg; z-index: 2; --fd: .7s; }
+  .frame--c { height: 58%; aspect-ratio: 507 / 851; right: 3%; bottom: 2%; rotate: -3deg; z-index: 3; --fd: .9s; }
+  @keyframes frame-in { from { opacity: 0; translate: 0 90px; rotate: 0deg; } }
+
+  .marquee { margin: 40px -12px 70px; }
+  .grid { max-width: none; }
+  .works__head h2 { font-size: clamp(64px, 7vw, 112px); }
+}
+
+@media (min-width: 1100px) and (max-height: 820px) {
+  .card .avatar-wrap { transform: scale(.85); margin: -4px 0 -8px; }
+  .signature { width: 140px; }
+  .link { min-height: 50px; }
+}
+
+@media (min-width: 1100px) and (prefers-reduced-motion: reduce) {
+  .frame { animation: none; }
 }
