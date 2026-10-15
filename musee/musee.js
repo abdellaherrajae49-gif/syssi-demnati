@@ -33,16 +33,23 @@ let state = { salle: "hall", likes: {}, mine: new Set(), stats: {} };
 });
 
 // ---------------------------------------------------------------
-// Rooms: each work hangs on the wall with its cartel
+// Rooms: one long wall walked sideways as you scroll. The painting
+// in the middle gets the spotlight; the room's name drifts behind.
 // ---------------------------------------------------------------
 const wall = $("#wall");
+const gallery = $("#gallery");
+const ghost = $("#ghost");
+let pieces = [], centres = [], startX = 0, endX = 0, lastNow = -1;
+
 function hang(salle) {
   const list = WORKS.filter((w) => w.salle === salle);
+  const o = other(salle);
   wall.innerHTML = list.map((w, i) => `
-    <article class="piece" style="--r:${(w.w / w.h).toFixed(3)}; --i:${i % 3}" data-work="${w.file}">
+    <article class="piece" style="--r:${(w.w / w.h).toFixed(3)}" data-work="${w.file}">
       <button class="piece__frame" type="button" data-view="${w.file}" aria-label="Voir ${w.title} en grand">
         <img src="${img(w, 1000)}" srcset="${img(w, 480)} 480w, ${img(w, 1000)} 1000w"
-             sizes="(min-width: 900px) 42vw, 86vw" width="${w.w}" height="${w.h}" alt="${alt(w)}" loading="lazy" decoding="async">
+             sizes="(min-width: 900px) 40vw, 76vw" width="${w.w}" height="${w.h}" alt="${alt(w)}" ${i < 3 ? "" : 'loading="lazy"'} decoding="async"
+             style="aspect-ratio:${w.w} / ${w.h}">
       </button>
       <div class="cartel">
         <div>
@@ -54,10 +61,59 @@ function hang(salle) {
           <button class="avis" type="button" data-view="${w.file}" data-focus-reviews><span class="avis__n">0</span> avis</button>
         </div>
       </div>
-    </article>`).join("");
+    </article>`).join("") + `
+    <div class="exit">
+      <h3>Fin de la ${ROOMS[salle].eyebrow}</h3>
+      <p>${list.length} œuvres vues. La visite continue de l’autre côté.</p>
+      <button class="exit__go" type="button" data-go="${o}">Passer en ${ROOMS[o].eyebrow} <span aria-hidden="true">→</span></button>
+      <a class="exit__back" href="/musee" data-go="hall">Retour au hall</a>
+    </div>`;
+  ghost.textContent = `${ROOMS[salle].eyebrow} · ${ROOMS[salle].eyebrow} ·`;
+  $("#g-total").textContent = String(list.length).padStart(2, "0");
+  pieces = $$(".piece", wall);
+  lastNow = -1;
+  measure();
   paintCounts();
-  observePieces();
 }
+
+// Where each painting's centre sits on the wall, and how far the wall travels
+function measure() {
+  if (views.room.hidden) return;
+  const items = [...wall.children];
+  centres = items.map((el) => el.offsetLeft + el.offsetWidth / 2);
+  startX = centres[0] - innerWidth / 2;
+  endX = centres[centres.length - 1] - innerWidth / 2;
+  gallery.style.height = `${Math.max(0, endX - startX) + innerHeight}px`;
+  roomFrame();
+}
+
+function roomFrame() {
+  if (views.room.hidden || !centres.length) return;
+  const span = gallery.offsetHeight - innerHeight;
+  const p = span > 0 ? Math.min(1, Math.max(0, (scrollY - gallery.offsetTop) / span)) : 0;
+  const x = startX + p * (endX - startX);
+  wall.style.transform = `translate3d(${(-x).toFixed(1)}px,0,0)`;
+  ghost.style.setProperty("--gx", `${(-(x - startX) * 0.35).toFixed(1)}px`);
+  const mid = x + innerWidth / 2;
+  let best = 0, bestD = Infinity;
+  pieces.forEach((el, i) => {
+    const d = Math.abs(centres[i] - mid);
+    if (d < bestD) { bestD = d; best = i; }
+    const f = Math.max(0, Math.min(1, 1 - (d / innerWidth) * 1.6));
+    el.style.setProperty("--f", f.toFixed(3));
+  });
+  if (best !== lastNow) { lastNow = best; $("#g-now").textContent = String(best + 1).padStart(2, "0"); }
+  $("#g-bar").style.setProperty("--p", p.toFixed(4));
+}
+let ticking = false;
+addEventListener("scroll", () => {
+  if (ticking || views.room.hidden) return;
+  ticking = true;
+  requestAnimationFrame(() => { ticking = false; roomFrame(); });
+}, { passive: true });
+let rz;
+addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(measure, 120); });
+wall.addEventListener("load", () => { clearTimeout(rz); rz = setTimeout(measure, 60); }, true);
 
 function paintCounts() {
   $$("[data-like]").forEach((b) => {
@@ -71,23 +127,25 @@ function paintCounts() {
   });
 }
 
-let io;
-function observePieces() {
-  io && io.disconnect();
-  if (!("IntersectionObserver" in window)) return $$(".piece").forEach((p) => p.classList.add("lit"));
-  io = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { e.target.classList.add("lit"); io.unobserve(e.target); }
-  }), { rootMargin: "0px 0px -12% 0px" });
-  $$(".piece").forEach((p) => io.observe(p));
-}
-
 // ---------------------------------------------------------------
 // Moving between the hall, the two rooms and the agenda
 // ---------------------------------------------------------------
 const views = { hall: $("#hall"), room: $("#room"), collection: $("#collection"), expositions: $("#expositions") };
-function show(where, push = true, from) {
+const veil = $("#veil");
+const hall = $("#hall");
+const scene = $("#hall-scene");
+let moving = false;
+
+// The hall leans towards whichever door you are about to pick
+$$(".portal").forEach((p) => {
+  const k = p.classList.contains("portal--noire") ? "noire" : "blanche";
+  p.addEventListener("pointerenter", () => { hall.dataset.lean = k; });
+  p.addEventListener("pointerleave", () => { delete hall.dataset.lean; });
+});
+
+function show(where, push = true, door) {
+  const salle = where === "noire" || where === "blanche" ? where : null;
   const go = () => {
-    const salle = where === "noire" || where === "blanche" ? where : null;
     views.hall.hidden = where !== "hall";
     views.room.hidden = !salle;
     views.collection.hidden = where !== "collection";
@@ -98,10 +156,6 @@ function show(where, push = true, from) {
       $("#room-eyebrow").textContent = r.eyebrow;
       $("#room-title").textContent = r.title;
       $("#room-intro").textContent = r.intro;
-      $$("#room-switch, [data-switch]").forEach((b) => {
-        b.textContent = `Passer en ${ROOMS[other(salle)].eyebrow} →`;
-        b.dataset.go = other(salle);
-      });
       hang(salle);
     }
     if (where === "collection") renderCollection();
@@ -109,27 +163,45 @@ function show(where, push = true, from) {
     $("meta[name=theme-color]").content = where === "blanche" ? "#f4f0e9" : "#131110";
     scrollTo(0, 0);
     state.salle = where;
+    if (salle) requestAnimationFrame(measure);
   };
   if (push) history.pushState(null, "", where === "hall" ? "/musee" : `#${where}`);
-  if (reduceMotion || state.salle === where) return go();
-  // walking through a door: that room's wall spreads over the whole screen
-  if (from && (where === "noire" || where === "blanche")) {
-    const r = from.getBoundingClientRect();
-    const sw = document.createElement("div");
-    sw.className = `sweep sweep--${where}`;
-    sw.style.clipPath = `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 120px 120px 6px 6px)`;
-    document.body.appendChild(sw);
-    requestAnimationFrame(() => requestAnimationFrame(() => { sw.style.clipPath = "inset(0 0 0 0 round 0)"; }));
+  if (reduceMotion || state.salle === where || moving) return go();
+  moving = true;
+  veil.className = `veil veil--${salle === "blanche" ? "blanche" : "noire"}`;
+
+  // Walking through a door: it swings open and the hall rushes towards it
+  if (door && salle && state.salle === "hall") {
+    const r = door.getBoundingClientRect();
+    const s = scene.getBoundingClientRect();
+    scene.style.transformOrigin = `${r.left + r.width / 2 - s.left}px ${r.top + r.height * 0.55 - s.top}px`;
+    hall.dataset.lean = salle;
+    door.classList.add("is-open");
+    requestAnimationFrame(() => {
+      scene.classList.add("zoom");
+      hall.classList.add("leaving");
+    });
+    setTimeout(() => veil.classList.add("on"), 620);
     setTimeout(() => {
       go();
-      sw.style.opacity = "0";
-      setTimeout(() => sw.remove(), 500);
-    }, 780);
+      // put the hall back quietly for the next visit
+      scene.style.transition = "none";
+      scene.classList.remove("zoom");
+      hall.classList.remove("leaving");
+      door.classList.remove("is-open");
+      delete hall.dataset.lean;
+      void scene.offsetWidth;
+      scene.style.transition = "";
+      requestAnimationFrame(() => { veil.classList.remove("on"); moving = false; });
+    }, 1150);
     return;
   }
-  // otherwise the lights dim, the room changes, the lights come back up
-  document.body.classList.add("dim");
-  setTimeout(() => { go(); requestAnimationFrame(() => document.body.classList.remove("dim")); }, 380);
+  // Anywhere else: a soft fade through the colour of the next room
+  veil.classList.add("on");
+  setTimeout(() => {
+    go();
+    requestAnimationFrame(() => { veil.classList.remove("on"); moving = false; });
+  }, 480);
 }
 document.addEventListener("click", (e) => {
   const a = e.target.closest("[data-go]");
@@ -415,8 +487,6 @@ if (startHash.startsWith("#oeuvre-") && WORKS.some((w) => w.file === startHash.s
 (function paintLoop() {
   const LAYERS = [
     { el: document.getElementById("paint"), max: innerWidth < 700 ? 3 : 6, visible: () => true },
-    { el: document.getElementById("paint-noire"), max: 3, visible: () => state.salle === "hall" },
-    { el: document.getElementById("paint-blanche"), max: 3, visible: () => state.salle === "hall" },
   ];
   const COLORS = ["#c9a25e", "#c8644a", "#6b4766", "#6f9a8d", "#b9607a", "#3b5ea8", "#e0b43c", "#2f7d5b"];
   const rnd = (a, b) => a + Math.random() * (b - a);
