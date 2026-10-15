@@ -77,37 +77,34 @@ body[data-salle="blanche"] .atelier { --paint-alpha: .2; }
 .atelier__spots { position: absolute; inset: 0; display: flex; justify-content: space-around; }
 .atelier__spots span {
   width: 34vw; height: 95vh; margin-top: -8vh;
-  background: radial-gradient(50% 100% at 50% 0%, var(--spot-cone, rgba(255, 228, 180, .08)), transparent 70%);
-  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  /* the cone is a picture drawn once; only its opacity breathes, which the graphics card does for free */
+  background: var(--cone) center / 100% 100% no-repeat; will-change: opacity;
   animation: breathe 9s ease-in-out infinite alternate;
 }
 .atelier__spots span:nth-child(2) { animation-delay: -3s; }
 .atelier__spots span:nth-child(3) { animation-delay: -6s; }
 body[data-salle="hall"] .atelier__spots { opacity: .5; }
-body[data-salle="blanche"] { --spot-cone: rgba(255, 255, 255, .8); }
+.atelier { --cone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3CradialGradient id='g' cx='.5' cy='0' r='1' gradientTransform='translate(.5 0) scale(0.5 1) translate(-.5 0)'%3E%3Cstop offset='0' stop-color='rgb(255,228,180)' stop-opacity='0.08'/%3E%3Cstop offset='0.7' stop-color='rgb(255,228,180)' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cpolygon points='38,0 62,0 100,100 0,100' fill='url(%23g)'/%3E%3C/svg%3E"); }
+body[data-salle="blanche"] .atelier { --cone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3CradialGradient id='g' cx='.5' cy='0' r='1' gradientTransform='translate(.5 0) scale(0.5 1) translate(-.5 0)'%3E%3Cstop offset='0' stop-color='rgb(255,255,255)' stop-opacity='0.8'/%3E%3Cstop offset='0.7' stop-color='rgb(255,255,255)' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cpolygon points='38,0 62,0 100,100 0,100' fill='url(%23g)'/%3E%3C/svg%3E"); }
 @keyframes breathe { from { opacity: .55; } to { opacity: 1; } }
 .atelier__floor { position: absolute; left: 0; right: 0; bottom: 0; height: 26vh; background: linear-gradient(to top, var(--floor), transparent); }
 .atelier__grain {
-  position: absolute; inset: 0; opacity: .45; mix-blend-mode: overlay;
+  position: absolute; inset: 0; opacity: .14;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .atelier__paint { position: absolute; inset: 0; opacity: var(--paint-alpha); transition: opacity 1.2s ease; }
-body[data-salle="blanche"] .atelier__paint { mix-blend-mode: multiply; }
 .stroke {
   position: absolute; left: var(--x); top: var(--y); width: var(--w); aspect-ratio: 5 / 1;
-  background: var(--c);
-  -webkit-mask: var(--m) center / 100% 100% no-repeat;
-          mask: var(--m) center / 100% 100% no-repeat;
   transform: translate(-50%, -50%) rotate(var(--rot)) scaleX(var(--flip));
-  clip-path: inset(0 100% 0 0);
-  animation: brush var(--life) cubic-bezier(.65, .05, .25, 1) forwards;
+  animation: brushFade var(--life) linear forwards;
 }
-@keyframes brush {
-  0% { clip-path: inset(0 100% 0 0); opacity: 1; }
-  18% { clip-path: inset(0 -4% 0 0); opacity: 1; }
-  70% { clip-path: inset(0 -4% 0 0); opacity: .9; }
-  100% { clip-path: inset(0 -4% 0 0); opacity: 0; }
-}
+/* the window slides right while the ink slides left by the same amount: the ink stays still and is uncovered */
+.stroke__win, .stroke__ink { position: absolute; inset: 0; will-change: transform; animation: var(--life) cubic-bezier(.65, .05, .25, 1) forwards; }
+.stroke__win { overflow: hidden; animation-name: brushWin; }
+.stroke__ink { display: block; width: 100%; height: 100%; animation-name: brushInk; }
+@keyframes brushWin { 0% { transform: translateX(-100%); } 18%, 100% { transform: none; } }
+@keyframes brushInk { 0% { transform: translateX(100%); } 18%, 100% { transform: none; } }
+@keyframes brushFade { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
 
 /* ---------- Top bar ---------- */
 .top {
@@ -141,12 +138,11 @@ body[data-salle="blanche"] .top__brand img { filter: none; }
 /* a spotlight above each door, warm over the black one, white over the white one */
 .hall__spot {
   position: absolute; top: -10%; width: 40%; height: 120%;
-  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
-  transition: opacity .8s ease;
+  will-change: opacity; transition: opacity .8s ease;
   animation: breathe 7s ease-in-out infinite alternate;
 }
-.hall__spot--noire { left: 8%; background: radial-gradient(45% 75% at 50% 0%, rgba(255, 214, 150, .2), transparent 75%); }
-.hall__spot--blanche { right: 8%; background: radial-gradient(45% 75% at 50% 0%, rgba(255, 255, 255, .2), transparent 75%); animation-delay: -3.5s; }
+.hall__spot--noire { left: 8%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3CradialGradient id='g' cx='.5' cy='0' r='1' gradientTransform='translate(.5 0) scale(0.6 1) translate(-.5 0)'%3E%3Cstop offset='0' stop-color='rgb(255,214,150)' stop-opacity='0.2'/%3E%3Cstop offset='0.75' stop-color='rgb(255,214,150)' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cpolygon points='40,0 60,0 100,100 0,100' fill='url(%23g)'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.hall__spot--blanche { right: 8%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3CradialGradient id='g' cx='.5' cy='0' r='1' gradientTransform='translate(.5 0) scale(0.6 1) translate(-.5 0)'%3E%3Cstop offset='0' stop-color='rgb(255,255,255)' stop-opacity='0.2'/%3E%3Cstop offset='0.75' stop-color='rgb(255,255,255)' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cpolygon points='40,0 60,0 100,100 0,100' fill='url(%23g)'/%3E%3C/svg%3E") center / 100% 100% no-repeat; animation-delay: -3.5s; }
 .hall[data-lean="noire"] .hall__spot--blanche, .hall[data-lean="blanche"] .hall__spot--noire { opacity: .35; }
 /* a polished floor that catches the light */
 .hall__floor {
@@ -270,7 +266,7 @@ body[data-salle="blanche"] .top__brand img { filter: none; }
 .hall__more span { color: var(--muted); }
 
 /* Entering: the hall flies towards the door you picked */
-.hall__scene.zoom { transition: transform 1.05s cubic-bezier(.7, 0, .25, 1), opacity .7s ease .35s; transform: scale(3.2); opacity: 0; }
+.hall__scene.zoom { will-change: transform, opacity; transition: transform 1.05s cubic-bezier(.7, 0, .25, 1), opacity .7s ease .35s; transform: scale(3.2); opacity: 0; }
 .hall.leaving .hall__fx { transition: opacity .8s ease .2s; opacity: 0; }
 
 /* =================================================================
@@ -311,13 +307,13 @@ body[data-salle="blanche"] .top__brand img { filter: none; }
 .piece {
   --f: 0;
   flex: none; position: relative; display: flex; flex-direction: column; align-items: center; gap: 22px;
-  transform: scale(calc(.84 + var(--f) * .16)); transform-origin: 50% 60%;
+  transform: scale(.84); transform-origin: 50% 60%; will-change: transform;
 }
 /* the spotlight on each painting brightens as it reaches the middle */
-.piece::before {
-  content: ""; position: absolute; left: -45%; right: -45%; top: -38%; height: 130%; z-index: -1; pointer-events: none;
+.piece__spot {
+  position: absolute; left: -45%; right: -45%; top: -38%; height: 130%; z-index: -1; pointer-events: none;
   background: radial-gradient(closest-side, var(--spot), transparent);
-  opacity: calc(.15 + var(--f) * .85);
+  opacity: .15; will-change: opacity;
 }
 .piece__frame {
   position: relative; display: block; padding: clamp(8px, 1.2vh, 14px); border: 0; border-radius: 2px; cursor: zoom-in;
@@ -325,15 +321,15 @@ body[data-salle="blanche"] .top__brand img { filter: none; }
   box-shadow: inset 0 0 0 1px var(--frame-edge), 0 40px 50px -30px rgba(0, 0, 0, .75), 0 14px 24px -16px rgba(0, 0, 0, .6);
 }
 .piece__frame img {
-  height: min(54svh, 560px); width: auto; max-width: 74vw; object-fit: contain;
-  filter: saturate(calc(.75 + var(--f) * .25)) brightness(calc(.8 + var(--f) * .2));
+  display: block; height: min(54svh, 560px); width: auto; max-width: 74vw; object-fit: contain;
 }
+.piece__dim { position: absolute; inset: 0; background: var(--wall); opacity: .3; pointer-events: none; will-change: opacity; }
 .piece__frame:focus-visible { outline: 2px solid var(--gold); outline-offset: 8px; }
 .cartel {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   min-width: 280px; padding: 10px 12px 10px 16px;
   background: var(--mat); border: 1px solid var(--line); border-radius: 3px;
-  opacity: calc(var(--f) * 1.4 - .2); transform: translateY(calc((1 - var(--f)) * 14px));
+  opacity: 0; transform: translateY(14px); will-change: transform, opacity;
 }
 .cartel h3 { margin: 0; font: italic 600 17px/1.2 var(--display); }
 .cartel p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
@@ -533,5 +529,5 @@ dialog::backdrop { background: rgba(5, 4, 4, .82); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
-  .stroke { animation: none; clip-path: none; opacity: .8; }
+  .stroke, .stroke__win, .stroke__ink { animation: none; opacity: .8; }
 }

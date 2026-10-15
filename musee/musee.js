@@ -45,11 +45,13 @@ function hang(salle) {
   const list = WORKS.filter((w) => w.salle === salle);
   const o = other(salle);
   wall.innerHTML = list.map((w, i) => `
-    <article class="piece" style="--r:${(w.w / w.h).toFixed(3)}" data-work="${w.file}">
+    <article class="piece" data-work="${w.file}">
+      <span class="piece__spot" aria-hidden="true"></span>
       <button class="piece__frame" type="button" data-view="${w.file}" aria-label="Voir ${w.title} en grand">
         <img src="${img(w, 1000)}" srcset="${img(w, 480)} 480w, ${img(w, 1000)} 1000w"
              sizes="(min-width: 900px) 40vw, 76vw" width="${w.w}" height="${w.h}" alt="${alt(w)}" ${i < 3 ? "" : 'loading="lazy"'} decoding="async"
              style="aspect-ratio:${w.w} / ${w.h}">
+        <span class="piece__dim" aria-hidden="true"></span>
       </button>
       <div class="cartel">
         <div>
@@ -70,8 +72,14 @@ function hang(salle) {
     </div>`;
   ghost.textContent = `${ROOMS[salle].eyebrow} · ${ROOMS[salle].eyebrow} ·`;
   $("#g-total").textContent = String(list.length).padStart(2, "0");
-  pieces = $$(".piece", wall);
+  // fetch the rest of the room quietly, so no painting pops in while walking
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 300));
+  idle(() => $$("img[loading=lazy]", wall).forEach((im) => { im.loading = "eager"; }));
+  pieces = $$(".piece", wall).map((el) => ({
+    el, spot: el.querySelector(".piece__spot"), dim: el.querySelector(".piece__dim"), cartel: el.querySelector(".cartel"), f: -1,
+  }));
   lastNow = -1;
+  lastX = null;
   measure();
   paintCounts();
 }
@@ -84,27 +92,42 @@ function measure() {
   startX = centres[0] - innerWidth / 2;
   endX = centres[centres.length - 1] - innerWidth / 2;
   gallery.style.height = `${Math.max(0, endX - startX) + innerHeight}px`;
+  lastX = null;
   roomFrame();
 }
 
+// Called once per frame while scrolling a room. Only transforms and
+// opacities change, so the browser never has to repaint the paintings.
+let lastX = null;
 function roomFrame() {
   if (views.room.hidden || !centres.length) return;
   const span = gallery.offsetHeight - innerHeight;
   const p = span > 0 ? Math.min(1, Math.max(0, (scrollY - gallery.offsetTop) / span)) : 0;
   const x = startX + p * (endX - startX);
+  if (x === lastX) return;
+  lastX = x;
   wall.style.transform = `translate3d(${(-x).toFixed(1)}px,0,0)`;
-  ghost.style.setProperty("--gx", `${(-(x - startX) * 0.35).toFixed(1)}px`);
+  ghost.style.transform = `translate3d(${(-(x - startX) * 0.35).toFixed(1)}px,-60%,0)`;
   const mid = x + innerWidth / 2;
   let best = 0, bestD = Infinity;
-  pieces.forEach((el, i) => {
+  pieces.forEach((pc, i) => {
     const d = Math.abs(centres[i] - mid);
     if (d < bestD) { bestD = d; best = i; }
-    const f = Math.max(0, Math.min(1, 1 - (d / innerWidth) * 1.6));
-    el.style.setProperty("--f", f.toFixed(3));
+    const f = Math.round(Math.max(0, Math.min(1, 1 - (d / innerWidth) * 1.6)) * 200) / 200;
+    if (f === pc.f) return;
+    pc.f = f;
+    pc.el.style.transform = `scale(${(0.84 + f * 0.16).toFixed(3)})`;
+    pc.spot.style.opacity = (0.15 + f * 0.85).toFixed(3);
+    pc.dim.style.opacity = ((1 - f) * 0.3).toFixed(3);
+    const c = Math.max(0, Math.min(1, f * 1.4 - 0.2));
+    pc.cartel.style.opacity = c.toFixed(3);
+    pc.cartel.style.transform = `translate3d(0,${((1 - f) * 14).toFixed(1)}px,0)`;
+    pc.cartel.style.visibility = c ? "visible" : "hidden";
   });
   if (best !== lastNow) { lastNow = best; $("#g-now").textContent = String(best + 1).padStart(2, "0"); }
-  $("#g-bar").style.setProperty("--p", p.toFixed(4));
+  bar.style.transform = `scaleX(${p.toFixed(4)})`;
 }
+const bar = $("#g-bar");
 let ticking = false;
 addEventListener("scroll", () => {
   if (ticking || views.room.hidden) return;
@@ -136,10 +159,20 @@ const hall = $("#hall");
 const scene = $("#hall-scene");
 let moving = false;
 
+// Start downloading a room's first paintings as soon as a door is approached
+const warmed = new Set();
+function warm(salle) {
+  if (warmed.has(salle)) return;
+  warmed.add(salle);
+  WORKS.filter((w) => w.salle === salle).slice(0, 3).forEach((w) => { const i = new Image(); i.src = img(w, 1000); });
+}
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
 // The hall leans towards whichever door you are about to pick
 $$(".portal").forEach((p) => {
   const k = p.classList.contains("portal--noire") ? "noire" : "blanche";
-  p.addEventListener("pointerenter", () => { hall.dataset.lean = k; });
+  p.addEventListener("pointerenter", () => { hall.dataset.lean = k; warm(k); });
+  p.addEventListener("touchstart", () => warm(k), { passive: true });
   p.addEventListener("pointerleave", () => { delete hall.dataset.lean; });
 });
 
@@ -490,26 +523,53 @@ if (startHash.startsWith("#oeuvre-") && WORKS.some((w) => w.file === startHash.s
   ];
   const COLORS = ["#c9a25e", "#c8644a", "#6b4766", "#6f9a8d", "#b9607a", "#3b5ea8", "#e0b43c", "#2f7d5b"];
   const rnd = (a, b) => a + Math.random() * (b - a);
+  // Each stroke is tinted once into its own small canvas, so the browser
+  // only slides and fades a finished picture instead of re-masking it every frame.
+  const SHAPES = [1, 2, 3].map((n) => {
+    const im = new Image();
+    im.decoding = "async";
+    im.src = `/assets/brush/stroke-${n}.webp`;
+    return im;
+  });
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  function ink(shape, color, cssW) {
+    const c = document.createElement("canvas");
+    c.className = "stroke__ink";
+    c.width = Math.min(1200, Math.round(cssW * dpr));
+    c.height = Math.round(c.width / 5);
+    const g = c.getContext("2d");
+    g.drawImage(shape, 0, 0, c.width, c.height);
+    g.globalCompositeOperation = "source-in";
+    g.fillStyle = color;
+    g.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
   function stroke(layer, life) {
+    const shape = SHAPES[(Math.random() * SHAPES.length) | 0];
+    if (!shape.complete || !shape.naturalWidth) return;
+    const w = rnd(28, innerWidth < 700 ? 90 : 55);
     const s = document.createElement("span");
     s.className = "stroke";
     const st = s.style;
     st.setProperty("--x", `${rnd(5, 95).toFixed(1)}%`);
     st.setProperty("--y", `${rnd(8, 92).toFixed(1)}%`);
-    st.setProperty("--w", `${rnd(28, innerWidth < 700 ? 90 : 55).toFixed(1)}vw`);
+    st.setProperty("--w", `${w.toFixed(1)}vw`);
     st.setProperty("--rot", `${rnd(-28, 28).toFixed(1)}deg`);
     st.setProperty("--flip", Math.random() < 0.5 ? -1 : 1);
-    st.setProperty("--c", COLORS[(Math.random() * COLORS.length) | 0]);
-    st.setProperty("--m", `url("/assets/brush/stroke-${1 + ((Math.random() * 3) | 0)}.webp")`);
     st.setProperty("--life", `${life.toFixed(1)}s`);
+    const win = document.createElement("span");
+    win.className = "stroke__win";
+    win.appendChild(ink(shape, COLORS[(Math.random() * COLORS.length) | 0], (w / 100) * innerWidth));
+    s.appendChild(win);
     layer.appendChild(s);
-    s.addEventListener("animationend", () => s.remove());
+    s.addEventListener("animationend", (e) => { if (e.target === s) s.remove(); });
   }
   if (reduceMotion) {
-    LAYERS.forEach((l) => { for (let i = 0; i < 3; i++) stroke(l.el, 1); });
+    Promise.all(SHAPES.map((im) => im.decode().catch(() => {}))).then(() => LAYERS.forEach((l) => { for (let i = 0; i < 3; i++) stroke(l.el, 1); }));
     return;
   }
-  LAYERS.forEach((l) => { for (let i = 0; i < 2; i++) setTimeout(() => stroke(l.el, rnd(9, 13)), i * 600); });
+  const first = () => LAYERS.forEach((l) => { for (let i = 0; i < 2; i++) setTimeout(() => stroke(l.el, rnd(9, 13)), i * 600); });
+  Promise.all(SHAPES.map((im) => im.decode().catch(() => {}))).then(first);
   setInterval(() => {
     if (document.hidden) return;
     LAYERS.forEach((l) => {
