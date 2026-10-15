@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Annonces · Musée Syssi Demnati</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/musee/musee.css">
+  <style>
+    main { max-width: 560px; margin: 0 auto; padding: 50px 18px 80px; }
+    h1 { font: italic 600 34px/1.1 var(--display); margin: 0 0 8px; }
+    main > p { color: var(--muted); margin: 0 0 28px; }
+    .field select { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--chip); color: var(--text); font: 400 15px var(--sans); }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .types { display: flex; gap: 18px; margin: 0 0 16px; }
+    #out { margin-top: 18px; padding: 14px; border-radius: 10px; background: var(--chip); }
+  </style>
+</head>
+<body data-salle="noire">
+  <main>
+    <p class="eyebrow">Réservé à l’artiste</p>
+    <h1>Envoyer une annonce</h1>
+    <p>Prévenez par e-mail les visiteurs inscrits d’une nouvelle œuvre ou d’une exposition.</p>
+    <form id="f">
+      <label class="field"><span>Clé d’administration</span><input type="password" name="key" required autocomplete="current-password"></label>
+      <div class="types">
+        <label class="check"><input type="radio" name="type" value="oeuvre" checked> Nouvelle œuvre</label>
+        <label class="check"><input type="radio" name="type" value="exposition"> Exposition</label>
+      </div>
+      <label class="field" id="work-field"><span>Œuvre à montrer</span><select name="work"></select></label>
+      <label class="field"><span>Objet de l’e-mail</span><input name="titre" maxlength="120" required value="Une nouvelle œuvre vient d’entrer au musée"></label>
+      <label class="field"><span>Message</span><textarea name="message" rows="5" maxlength="2000" required>Syssi Demnati vient d’accrocher une nouvelle toile. Venez la découvrir et laisser votre avis.</textarea></label>
+      <div class="row">
+        <button class="btn" type="button" id="count">Compter les abonnés</button>
+        <button class="btn btn--solid" type="submit">Envoyer à tous</button>
+      </div>
+    </form>
+    <div id="out" hidden></div>
+  </main>
+  <script src="/assets/works.js"></script>
+  <script>
+    const f = document.getElementById("f");
+    const out = document.getElementById("out");
+    const SITE = "https://syssi-demnati.vercel.app";
+    f.work.innerHTML = window.WORKS.slice().reverse().map((w) => `<option value="${w.file}">${w.title} · Salle ${w.salle === "noire" ? "Noire" : "Blanche"}</option>`).join("");
+    f.addEventListener("change", (e) => {
+      if (e.target.name !== "type") return;
+      const expo = f.type.value === "exposition";
+      document.getElementById("work-field").hidden = expo;
+      f.titre.value = expo ? "Une nouvelle exposition est annoncée" : "Une nouvelle œuvre vient d’entrer au musée";
+      f.message.value = expo ? "Syssi Demnati expose prochainement. Retrouvez les dates et le lieu au musée en ligne." : "Syssi Demnati vient d’accrocher une nouvelle toile. Venez la découvrir et laisser votre avis.";
+    });
+    async function send(test) {
+      const w = window.WORKS.find((x) => x.file === f.work.value);
+      const expo = f.type.value === "exposition";
+      const r = await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${f.key.value}` },
+        body: JSON.stringify({
+          test, type: f.type.value, titre: f.titre.value, message: f.message.value,
+          image: expo || !w ? "" : `${SITE}/assets/works/${w.file}-1000.webp`,
+          lien: expo || !w ? "" : `${SITE}/musee#${w.salle}`,
+        }),
+      });
+      const j = await r.json().catch(() => ({ error: "Réponse illisible." }));
+      out.hidden = false;
+      out.textContent = j.error ? `Erreur : ${j.error}` : test ? `${j.abonnes} abonné(s) recevront cette annonce.` : `Envoyé à ${j.envoyes} abonné(s).`;
+    }
+    document.getElementById("count").addEventListener("click", () => f.reportValidity() && send(true));
+    f.addEventListener("submit", (e) => { e.preventDefault(); if (confirm("Envoyer cet e-mail à tous les abonnés ?")) send(false); });
+  </script>
+</body>
+</html>

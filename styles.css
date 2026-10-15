@@ -418,7 +418,7 @@ svg .fill { fill: currentColor; stroke: none; }
   -webkit-tap-highlight-color: transparent;
 }
 .tile.in { clip-path: inset(0 0 0 0 round 16px); }
-.tile img { width: 100%; transform: scale(1.3); transition: transform 1.6s var(--ease); }
+.tile img { width: 100%; height: auto; transform: scale(1.3); transition: transform 1.6s var(--ease); }
 .tile.in img { transform: scale(1); }
 .tile.in:hover img { transform: scale(1.05); }
 /* glare that follows the pointer */
@@ -644,3 +644,30 @@ svg .fill { fill: currentColor; stroke: none; }
   .about__facts { grid-template-columns: 1fr; }
   .about__facts div { padding: 14px; }
 }
+
+/* ---------- Vers le musée ---------- */
+.visit { max-width: 720px; margin: 10px auto 34px; }
+.visit__door {
+  position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
+  padding: 30px 30px 30px 34px; border-radius: 24px; overflow: hidden; isolation: isolate;
+  color: var(--cream); text-decoration: none; border: 1px solid rgba(201,162,94,.45);
+  box-shadow: var(--shadow); transition: transform .5s var(--ease), border-color .4s;
+}
+.visit__halves { position: absolute; inset: 0; z-index: -1; display: grid; grid-template-columns: 1fr 1fr; }
+.visit__half { transition: transform .8s var(--ease); }
+.visit__half--noire { background: radial-gradient(120% 90% at 30% 0%, #2c2420, #0d0b0a 70%); }
+.visit__half--blanche { background: radial-gradient(120% 90% at 70% 0%, #fbf8f2, #e4ddd0 75%); }
+.visit__text { display: grid; gap: 6px; }
+.visit__eyebrow { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+.visit__title { font: italic 600 clamp(28px, 4vw, 40px)/1.05 var(--display); mix-blend-mode: difference; color: #f4ede1; }
+.visit__sub { font-size: 13.5px; mix-blend-mode: difference; color: #cfc6b8; }
+.visit__arrow {
+  width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-size: 22px;
+  background: var(--gold); color: #141210; transition: transform .5s var(--ease);
+}
+.visit__door:hover, .visit__door:focus-visible { transform: translateY(-3px); border-color: var(--gold); }
+.visit__door:hover .visit__half--noire { transform: translateX(-4%); }
+.visit__door:hover .visit__half--blanche { transform: translateX(4%); }
+.visit__door:hover .visit__arrow { transform: translateX(4px); }
+.foot a { color: var(--gold); text-underline-offset: 3px; }
+@media (max-width: 480px) { .visit__door { padding: 24px 20px 24px 22px; } .visit__arrow { width: 46px; height: 46px; } }

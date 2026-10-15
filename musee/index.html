@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Musée Syssi Demnati · Salle Noire &amp; Salle Blanche</title>
+  <meta name="description" content="Le musée en ligne de Syssi Demnati, artiste peintre née à Meknès et installée à Casablanca. Deux salles, deux ambiances : choisissez la vôtre.">
+  <meta name="theme-color" content="#131110">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Musée Syssi Demnati">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:description" content="Deux salles, deux ambiances. Acrylique sur toile.">
+  <link rel="canonical" href="https://syssi-demnati.vercel.app/musee">
+  <meta property="og:url" content="https://syssi-demnati.vercel.app/musee">
+  <meta property="og:image" content="https://syssi-demnati.vercel.app/assets/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/musee/musee.css">
+</head>
+<body data-salle="hall">
+  <div class="lights" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="top__brand" href="/musee" data-go="hall" aria-label="Accueil du musée">
+      <img src="/assets/signature.png" width="400" height="360" alt="">
+      <span>Musée Syssi Demnati</span>
+    </a>
+    <nav class="top__nav" aria-label="Salles">
+      <a href="#noire" data-go="noire">Salle Noire</a>
+      <a href="#blanche" data-go="blanche">Salle Blanche</a>
+      <a href="#expositions" data-go="expositions">Expositions</a>
+    </nav>
+    <button class="top__account" type="button" id="account-btn" aria-haspopup="dialog">
+      <span class="top__avatar" aria-hidden="true">✉</span><span class="top__account-label">Être prévenu(e)</span>
+    </button>
+  </header>
+
+  <!-- Le hall : le visiteur choisit sa salle -->
+  <section class="hall" id="hall" aria-labelledby="hall-title">
+    <p class="eyebrow">Musée en ligne</p>
+    <h1 id="hall-title">Syssi Demnati</h1>
+    <p class="hall__quote">« L’Art est beau quand la main, la tête et le cœur travaillent ensemble. »</p>
+    <p class="hall__choose">Deux salles, deux ambiances. Choisissez la vôtre.</p>
+    <div class="doors">
+      <a class="door door--noire" href="#noire" data-go="noire">
+        <span class="door__room" data-preview="noire" aria-hidden="true"></span>
+        <span class="door__leaf door__leaf--l" aria-hidden="true"></span>
+        <span class="door__leaf door__leaf--r" aria-hidden="true"></span>
+        <span class="door__plate">
+          <span class="door__name">Salle Noire</span>
+          <span class="door__meta" data-count="noire"></span>
+        </span>
+      </a>
+      <a class="door door--blanche" href="#blanche" data-go="blanche">
+        <span class="door__room" data-preview="blanche" aria-hidden="true"></span>
+        <span class="door__leaf door__leaf--l" aria-hidden="true"></span>
+        <span class="door__leaf door__leaf--r" aria-hidden="true"></span>
+        <span class="door__plate">
+          <span class="door__name">Salle Blanche</span>
+          <span class="door__meta" data-count="blanche"></span>
+        </span>
+      </a>
+    </div>
+    <a class="hall__expo" href="#expositions" data-go="expositions">Expositions et actualités →</a>
+  </section>
+
+  <!-- Une salle : les œuvres accrochées au mur -->
+  <main class="room" id="room" hidden>
+    <header class="room__head">
+      <p class="eyebrow" id="room-eyebrow"></p>
+      <h2 id="room-title"></h2>
+      <p class="room__intro" id="room-intro"></p>
+      <button class="room__switch" type="button" id="room-switch"></button>
+    </header>
+    <div class="wall" id="wall"></div>
+    <div class="room__end">
+      <button class="room__switch" type="button" data-switch></button>
+      <a class="room__back" href="/musee" data-go="hall">Retour au hall</a>
+    </div>
+  </main>
+
+  <!-- Expositions et abonnement -->
+  <section class="expos" id="expositions" hidden aria-labelledby="expo-title">
+    <p class="eyebrow">Agenda</p>
+    <h2 id="expo-title">Expositions</h2>
+    <div class="expos__grid">
+      <div>
+        <h3>À venir</h3>
+        <ul class="expo-list" id="expo-next"></ul>
+      </div>
+      <div>
+        <h3>Passées</h3>
+        <ul class="expo-list" id="expo-past"></ul>
+      </div>
+    </div>
+    <div class="notify" id="notify">
+      <div>
+        <h3>Être prévenu(e)</h3>
+        <p>Recevez un e-mail à chaque nouvelle œuvre et à chaque exposition annoncée.</p>
+      </div>
+      <button class="btn btn--solid" type="button" data-open-account>M’inscrire avec mon e-mail</button>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <a href="/">← Instagram, TikTok, Snapchat</a>
+    <p>© <span id="year">2026</span> Syssi Demnati · Toutes les œuvres sont des originaux, acrylique sur toile.</p>
+  </footer>
+
+  <!-- Fiche d’une œuvre : grand format, j’aime, avis -->
+  <dialog class="viewer" id="viewer" aria-labelledby="v-title">
+    <button class="x" type="button" data-close aria-label="Fermer">✕</button>
+    <div class="viewer__art">
+      <button class="viewer__nav viewer__nav--prev" type="button" id="v-prev" aria-label="Œuvre précédente">←</button>
+      <img id="v-img" alt="">
+      <button class="viewer__nav viewer__nav--next" type="button" id="v-next" aria-label="Œuvre suivante">→</button>
+    </div>
+    <div class="viewer__side">
+      <p class="eyebrow" id="v-salle"></p>
+      <h3 id="v-title"></h3>
+      <p class="viewer__medium">Syssi Demnati · Acrylique sur toile</p>
+      <div class="viewer__actions">
+        <button class="like" type="button" id="v-like" aria-pressed="false"><svg class="like__heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="like__count" id="v-likes">0</span><span class="sr">J’aime</span></button>
+        <span class="viewer__stars" id="v-avg"></span>
+      </div>
+      <h4>Avis des visiteurs</h4>
+      <ul class="reviews" id="v-reviews"></ul>
+      <form class="review-form" id="v-form" hidden>
+        <fieldset class="stars" id="v-stars">
+          <legend>Votre note</legend>
+          <input type="radio" name="note" id="s5" value="5"><label for="s5" title="5 étoiles">★</label>
+          <input type="radio" name="note" id="s4" value="4"><label for="s4" title="4 étoiles">★</label>
+          <input type="radio" name="note" id="s3" value="3"><label for="s3" title="3 étoiles">★</label>
+          <input type="radio" name="note" id="s2" value="2"><label for="s2" title="2 étoiles">★</label>
+          <input type="radio" name="note" id="s1" value="1"><label for="s1" title="1 étoile">★</label>
+        </fieldset>
+        <label class="field"><span>Votre prénom</span><input name="nom" maxlength="40" required autocomplete="given-name"></label>
+        <label class="field"><span>Votre avis</span><textarea name="texte" rows="3" maxlength="600" required placeholder="Ce que cette œuvre vous inspire…"></textarea></label>
+        <button class="btn btn--solid" type="submit">Publier mon avis</button>
+      </form>
+      <div class="review-gate" id="v-gate">
+        <p>Connectez-vous avec votre e-mail pour laisser un avis.</p>
+        <button class="btn" type="button" data-open-account>Se connecter</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Compte : connexion par e-mail et préférences -->
+  <dialog class="account" id="account" aria-labelledby="a-title">
+    <button class="x" type="button" data-close aria-label="Fermer">✕</button>
+    <div id="a-out">
+      <h3 id="a-title">Restez au courant</h3>
+      <p>Entrez votre e-mail : vous recevrez un lien de connexion. Vous pourrez ensuite laisser des avis et être prévenu(e) des nouvelles œuvres et des expositions.</p>
+      <form id="a-form">
+        <label class="field"><span>Adresse e-mail</span><input type="email" name="email" required autocomplete="email" placeholder="vous@exemple.com"></label>
+        <label class="check"><input type="checkbox" name="optin" checked> Me prévenir des nouvelles œuvres et des expositions</label>
+        <button class="btn btn--solid" type="submit">Recevoir le lien</button>
+      </form>
+      <p class="account__sent" id="a-sent" hidden></p>
+    </div>
+    <div id="a-in" hidden>
+      <h3>Votre compte</h3>
+      <p class="account__email" id="a-email"></p>
+      <label class="check"><input type="checkbox" id="a-works"> Nouvelles œuvres</label>
+      <label class="check"><input type="checkbox" id="a-expos"> Expositions annoncées</label>
+      <button class="btn" type="button" id="a-logout">Se déconnecter</button>
+    </div>
+    <p class="account__preview" id="a-preview" hidden>Aperçu : le musée n’est pas encore relié à sa base de données, tout est enregistré sur cet appareil uniquement.</p>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/assets/works.js"></script>
+  <script src="/assets/expositions.js"></script>
+  <script src="/musee/config.js"></script>
+  <script src="/musee/store.js"></script>
+  <script src="/musee/musee.js"></script>
+</body>
+</html>

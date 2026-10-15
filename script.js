@@ -1,32 +1,4 @@
-// Edit this list to add, remove or rename works. Files live in assets/works/.
-// Each work has a small file (-480) for the grid and a large one (-1000) for the viewer.
-const WORKS = [
-  { file: "01", title: "N° 01" },
-  { file: "02", title: "N° 02" },
-  { file: "03", title: "N° 03" },
-  { file: "04", title: "N° 04" },
-  { file: "05", title: "N° 05" },
-  { file: "06", title: "N° 06" },
-  { file: "07", title: "N° 07" },
-  { file: "08", title: "N° 08" },
-  { file: "09", title: "N° 09" },
-  { file: "10", title: "N° 10" },
-  { file: "11", title: "N° 11" },
-  { file: "12", title: "N° 12" },
-  { file: "13", title: "N° 13" },
-  { file: "14", title: "N° 14" },
-  { file: "15", title: "N° 15" },
-  { file: "16", title: "N° 16" },
-  { file: "17", title: "N° 17" },
-  { file: "18", title: "N° 18" },
-  { file: "19", title: "N° 19" },
-  { file: "20", title: "N° 20" },
-  { file: "21", title: "N° 21" },
-  { file: "22", title: "N° 22" },
-  { file: "23", title: "N° 23" },
-  { file: "24", title: "N° 24" },
-  { file: "25", title: "N° 25" },
-];
+const WORKS = window.WORKS;
 
 const small = (w) => `assets/works/${w.file}-480.webp`;
 const large = (w) => `assets/works/${w.file}-1000.webp`;
@@ -47,7 +19,7 @@ const tiles = WORKS.map((w, i) => {
   b.type = "button";
   b.dataset.open = i;
   b.setAttribute("aria-label", `Ouvrir ${w.title}`);
-  b.innerHTML = `<img src="${small(w)}" alt="${alt(w)}" loading="lazy" decoding="async"><span class="tile__no">${w.title}</span>`;
+  b.innerHTML = `<img src="${small(w)}" width="${w.w}" height="${w.h}" alt="${alt(w)}" loading="lazy" decoding="async"><span class="tile__no">${w.title}</span>`;
   return b;
 });
 
@@ -65,7 +37,13 @@ function layout() {
     grid.appendChild(c);
     return c;
   });
-  tiles.forEach((t, i) => cols[i % n].appendChild(t));
+  // masonry: each work goes to the column that is currently shortest
+  const heights = new Array(n).fill(0);
+  tiles.forEach((t, i) => {
+    const k = heights.indexOf(Math.min(...heights));
+    cols[k].appendChild(t);
+    heights[k] += WORKS[i].h / WORKS[i].w + 0.06;
+  });
 }
 layout();
 

@@ -25,3 +25,18 @@ Live at https://syssi-demnati.vercel.app/ — every push to `main` redeploys. If
 
 1. Export two WebP files into `assets/works/`: `09-480.webp` (480px wide) and `09-1000.webp` (up to 1000px wide).
 2. Add `{ file: "09", title: "Your title" }` to `WORKS` in `script.js`.
+
+## Musée en ligne (`/musee`)
+
+Two rooms: the Salle Noire (dark canvases) and the Salle Blanche (light canvases). Each work's room is the `salle` field in `assets/works.js`; exhibitions live in `assets/expositions.js`.
+
+Visitors can like works (no account), sign in with their email (a one-time link), post reviews, and choose to be emailed about new works and exhibitions.
+
+Until Supabase is connected the museum runs in preview mode: likes, reviews and sign-in are stored in the visitor's own browser only.
+
+### Going live
+1. Create a free project at supabase.com. In SQL Editor, run `supabase/schema.sql`.
+2. In Supabase > Authentication > URL Configuration, set the Site URL to `https://syssi-demnati.vercel.app/musee`.
+3. Put the project URL and the anon public key in `musee/config.js`.
+4. To send announcements: create a free account at resend.com and verify a sending domain. Then in Vercel > Settings > Environment Variables add `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `MAIL_FROM` and `ADMIN_KEY`, and redeploy.
+5. Announcements are sent from `/musee/admin` with the `ADMIN_KEY`.

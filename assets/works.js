@@ -1,0 +1,30 @@
+// The catalogue, shared by the link page and the museum.
+// To add a work: put NN-480.webp and NN-1000.webp in assets/works/ and add a line here.
+// w/h are the size of the -1000 file. salle is the room it hangs in: "noire" (dark canvases) or "blanche" (light canvases).
+window.WORKS = [
+  { file: "01", title: "N° 01", w: 742, h: 1115, salle: "blanche" },
+  { file: "02", title: "N° 02", w: 750, h: 1132, salle: "blanche" },
+  { file: "03", title: "N° 03", w: 800, h: 1209, salle: "blanche" },
+  { file: "04", title: "N° 04", w: 765, h: 1157, salle: "noire" },
+  { file: "05", title: "N° 05", w: 512, h: 726, salle: "blanche" },
+  { file: "06", title: "N° 06", w: 507, h: 851, salle: "blanche" },
+  { file: "07", title: "N° 07", w: 535, h: 753, salle: "blanche" },
+  { file: "08", title: "N° 08", w: 604, h: 568, salle: "noire" },
+  { file: "09", title: "N° 09", w: 862, h: 860, salle: "noire" },
+  { file: "10", title: "N° 10", w: 825, h: 962, salle: "blanche" },
+  { file: "11", title: "N° 11", w: 765, h: 1072, salle: "blanche" },
+  { file: "12", title: "N° 12", w: 736, h: 1105, salle: "noire" },
+  { file: "13", title: "N° 13", w: 780, h: 1177, salle: "blanche" },
+  { file: "14", title: "N° 14", w: 1000, h: 827, salle: "noire" },
+  { file: "15", title: "N° 15", w: 552, h: 1121, salle: "blanche" },
+  { file: "16", title: "N° 16", w: 817, h: 928, salle: "noire" },
+  { file: "17", title: "N° 17", w: 662, h: 890, salle: "blanche" },
+  { file: "18", title: "N° 18", w: 750, h: 532, salle: "noire" },
+  { file: "19", title: "N° 19", w: 701, h: 1054, salle: "noire" },
+  { file: "20", title: "N° 20", w: 835, h: 956, salle: "noire" },
+  { file: "21", title: "N° 21", w: 923, h: 767, salle: "noire" },
+  { file: "22", title: "N° 22", w: 735, h: 838, salle: "noire" },
+  { file: "23", title: "N° 23", w: 598, h: 713, salle: "blanche" },
+  { file: "24", title: "N° 24", w: 699, h: 844, salle: "noire" },
+  { file: "25", title: "N° 25", w: 630, h: 462, salle: "noire" },
+];
